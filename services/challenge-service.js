@@ -30,13 +30,20 @@ class ChhallengeService {
   }
 
   async execute(id, code) {
+    try {
+      eval(`(${code})`);
+    } catch (error) {
+      return {error: error.message}
+    }
+
+    try {
     const userCode = eval(`(${code})`);
     const originalConsoleLog = console.log;
     let logOutput = "";
-    let salida = ""
+    let salida = "";
+    let input = "";
     console.log = function (...args) {
       originalConsoleLog.apply(console, args);
-
       logOutput = args.map(arg => {
         if (typeof arg === 'object') {
           return JSON.stringify(arg);
@@ -47,10 +54,11 @@ class ChhallengeService {
 
     };
     let firstTest = await this.challengeRepository.getFirstTest(id);
+    input = firstTest.testCases[0].input
     let userOutput;
-
+    
     if (typeof userCode === 'function') {
-      userOutput = userCode(...firstTest.testCases[0].input);
+      userOutput = userCode(...input);
     } else if (typeof userCode === 'string') {
       const context = {};
       input.forEach((value, index) => {
@@ -65,8 +73,18 @@ class ChhallengeService {
     } else {
       throw new Error('El código del usuario debe ser una función o una cadena de texto');
     }
-    
-    return {userOutput: userOutput, log: salida};
+
+    return {input: input, userOutput: userOutput === undefined 
+      ? "undefined" 
+      : userOutput === null 
+      ? "null" 
+      : userOutput === Infinity 
+      ? "Infinity" 
+      : userOutput, 
+      log: salida};
+    } catch (error) {
+      return {error: error.message}
+    }
   }
 
 }

@@ -1,4 +1,4 @@
-import { getDB } from '../database/database.js';
+import { getDB } from '../database/mongo.js';
 import { ObjectId } from 'mongodb';
 
 class ChallengeRepository {

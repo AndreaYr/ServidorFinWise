@@ -22,11 +22,8 @@ app.use('/user', user);
 
 async function startServer() {
   try {
-    // Conectar bases de datos
     await connectSequelize();
     await connectDB();
-
-    // Iniciar servidor Express
     const PORT = 10101;
     app.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
@@ -37,12 +34,3 @@ async function startServer() {
 }
 
 startServer();
-
-
-/*
-connectDB().then(() => {
-  app.listen(port, () => {
-    console.log(`Servidor ejecutándose en http://localhost:${port}`);
-  });
-});
-*/

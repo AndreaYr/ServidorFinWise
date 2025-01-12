@@ -1,19 +1,50 @@
 import bcrypt from 'bcrypt';
 import { connectSequelize } from '../database/sequelize.js';
 import User from '../dto/user.js';
-
+import jwt from 'jsonwebtoken';
+const SECRET_KEY = 'tu_clave_secreta';
 
 
 class UserRepository {
 
-  async register() {
-    const hashedPassword = await bcrypt.hash("12345", 10);
-    const username = "PODEROSO2"
+  async register(info) {
+    const hashedPassword = await bcrypt.hash(info.password, 10);
     const user = await User.create({
-      username,
+      email: info.email,
       password: hashedPassword,
     });
     return "ok";
+  }
+
+  async login(info) {
+    try {
+      const email = info.email;
+      const password = info.password;
+
+      const user = await User.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        return {login: false};
+      }
+
+      const validPassword = await bcrypt.compare(password, user.password);
+
+      if (!validPassword) {
+        return {login: false};
+      }
+
+      const token = jwt.sign(
+        { userId: user.id },
+        SECRET_KEY,
+        { expiresIn: '1h' } 
+      );
+      return {login: true, token}
+
+    } catch (error) {
+      console.error(error);
+    }
   }
 
 }

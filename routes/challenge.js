@@ -3,6 +3,7 @@ import ChallengeController from '../controllers/challenge-controller.js';
 import ChallengeService from '../services/challenge-service.js';
 import ChallengeRepository from '../repositories/challenge-repository.js';
 import AutoJudge from '../utils/judge.js';
+import verifyToken from '../middleware/verifyToken.js'
 
 
 const router = express.Router();
@@ -13,7 +14,7 @@ const challengeService = new ChallengeService(challengeRepository, judge);
 
 const challengeController = new ChallengeController(challengeService);
 router.get('/info/:id', challengeController.getChallenge);
-router.post('/test/:id', challengeController.testChallenge);
+router.post('/test/:id', verifyToken, challengeController.testChallenge);
 router.post('/execute/:id', challengeController.execute);
 
 export default router;

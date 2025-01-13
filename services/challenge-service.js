@@ -1,4 +1,13 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
+const genAI = new GoogleGenerativeAI("AIzaSyD-Q5xGKSe8Wct412NtA7MZ6AAJtrpKAj8");
 
+const prompt = `
+A continuación se te pasará el enunciado de un problema de programación en Javascript y el 
+código hecho por un estudiante para resolverlo. El código aún no cumple con los requisitos del probelma. 
+Asumiendo el rol de un profesor, lo que debes hacer es ayudarle mostrándole pistas sobre el error que aún 
+tiene y cómo resolver el problema. Nunca muestres el código que resuleve el problema. Antecede a las 
+pistas la siguiente frase: Te ayudaré dándote pistas sobre cómo resolver tú ejercicio:
+`
 
 class ChhallengeService {
 
@@ -7,6 +16,23 @@ class ChhallengeService {
     this.judge = judge;
 
   }
+
+
+  async helpAi(id, code){
+    const enunciado = `Enunciado: ${await this.challengeRepository.getDescriptionChallenge(id)}`;
+    const codigo = `código hecho por el estudiante: ${code}`;
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const result = await model.generateContent(prompt + enunciado + codigo);
+      const response = result.response;
+      return response.text();
+  
+    } catch (error) {
+      return "Ha ocurrido un error al obtener la ayuda de la IA";
+    }
+    
+  }
+
 
   async getChallenge(id) {
     let infoChallenge = await this.challengeRepository.getChallege(id);
@@ -23,7 +49,6 @@ class ChhallengeService {
   async getTests(idChallenge, code) {
     let infoChallenge = await this.challengeRepository.getTests(idChallenge);
     const codeUser = eval(`(${code})`);
-    //codeUser()
     const results1 = this.judge.runTests(codeUser, infoChallenge.testCases);
 
     return results1;

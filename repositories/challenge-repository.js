@@ -6,6 +6,12 @@ class ChallengeRepository {
         this.collectionName = 'challenges';
     }
 
+    async getDescriptionChallenge(id) {
+        const db = getDB();
+        const description = await db.collection(this.collectionName).findOne({ _id: new ObjectId(id) },  
+            { projection: { _id: 0, description: 1} });
+        return description;
+    }
 
     async getChallege(id) {
         const db = getDB();

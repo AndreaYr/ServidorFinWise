@@ -13,8 +13,10 @@ const judge = new AutoJudge();
 const challengeService = new ChallengeService(challengeRepository, judge);
 
 const challengeController = new ChallengeController(challengeService);
-router.get('/info/:id', challengeController.getChallenge);
+router.get('/info/:id', verifyToken, challengeController.getChallenge);
 router.post('/test/:id', verifyToken, challengeController.testChallenge);
-router.post('/execute/:id', challengeController.execute);
+router.post('/execute/:id', verifyToken, challengeController.execute);
+router.post('/helpai/:id', verifyToken, challengeController.helpAi);
+
 
 export default router;

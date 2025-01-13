@@ -25,6 +25,13 @@ class ChallengeController {
             data:  firstTest
         });
     }
+
+    helpAi = async (req, res) => {
+        let helpText =  await this.challengeService.helpAi(req.params.id, req.body.code);        
+        return res.status(200).json({ 
+            data:  helpText
+        });
+    }
     
 }
 

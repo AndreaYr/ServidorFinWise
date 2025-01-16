@@ -17,22 +17,25 @@ class ChhallengeService {
 
   }
 
-
-  async helpAi(id, code){
-    const enunciado = `Enunciado: ${await this.challengeRepository.getDescriptionChallenge(id)}`;
+  async helpAi(req, res, id, code){
+    const userEmail = req.userEmail.userEmail;    
+    const enunciado = `E, renunciado: ${await this.challengeRepository.getDescriptionChallenge(id)}`;
     const codigo = `código hecho por el estudiante: ${code}`;
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const result = await model.generateContent(prompt + enunciado + codigo);
-      const response = result.response;
-      return response.text();
-  
+      const vrifyAiAids = await this.challengeRepository.decrementVerifyAiAids(userEmail);
+      if (vrifyAiAids){
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const result = await model.generateContent(prompt + enunciado + codigo);
+        const response = result.response;
+        const decremetOk = await this.challengeRepository.decrementAiAids(userEmail);
+        return response.text();
+      }
+      return "No tienes más intentos de IA por hoy. Debes esperar hasta las 12:00 horas"
     } catch (error) {
       return "Ha ocurrido un error al obtener la ayuda de la IA";
     }
     
   }
-
 
   async getChallenge(id) {
     let infoChallenge = await this.challengeRepository.getChallege(id);
@@ -47,11 +50,14 @@ class ChhallengeService {
   }
 
   async getTests(idChallenge, code) {
-    let infoChallenge = await this.challengeRepository.getTests(idChallenge);
-    const codeUser = eval(`(${code})`);
-    const results1 = this.judge.runTests(codeUser, infoChallenge.testCases);
-
-    return results1;
+    try {
+      let infoChallenge = await this.challengeRepository.getTests(idChallenge);
+      const codeUser = eval(`(${code})`);
+      const results1 = this.judge.runTests(codeUser, infoChallenge.testCases);
+      return results1;
+    } catch (error) {      
+      return {error: error.message}
+    }
   }
 
   async execute(id, code) {

@@ -13,9 +13,7 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-
-    req.user = decoded;
-
+    req.userEmail = decoded;
     next();
   } catch (error) {
     console.error('Error al verificar el token:', error.message);

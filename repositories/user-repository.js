@@ -3,8 +3,8 @@ import { connectSequelize } from '../database/sequelize.js';
 import User from '../dto/user.js';
 import jwt from 'jsonwebtoken';
 import { getDB } from '../database/mongo.js';
-
-const SECRET_KEY = 'tu_clave_secreta';
+import dotenv from 'dotenv';
+dotenv.config();
 
 
 class UserRepository {
@@ -47,7 +47,7 @@ class UserRepository {
 
       const token = jwt.sign(
         { userEmail: email },
-        SECRET_KEY,
+        process.env.JWT_SECRET,
         { expiresIn: '1h' } 
       );
       return {login: true, token}

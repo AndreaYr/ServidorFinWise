@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-const genAI = new GoogleGenerativeAI("AIzaSyD-Q5xGKSe8Wct412NtA7MZ6AAJtrpKAj8");
+import dotenv from 'dotenv';
+dotenv.config();
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_SECRET);
 
 const prompt = `
 A continuación se te pasará el enunciado de un problema de programación en Javascript y el 

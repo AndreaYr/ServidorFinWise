@@ -6,14 +6,14 @@ import cookieParser from 'cookie-parser';
 import challenge from './routes/challenge.js';
 import user from './routes/user.js';
 
-import { SIGNING_KEY_COOKIE } from './config/keys.js';
 import  { connectDB } from './database/mongo.js';
 import  { connectSequelize } from './database/sequelize.js';
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express()
   .use(bodyParser.json())
-  .use(cookieParser(SIGNING_KEY_COOKIE));
+  .use(cookieParser(process.env.COOKIE_SECRET));
 
 
 app.use('/challenge', challenge);

@@ -8,6 +8,7 @@ const router = express.Router();
 const userRepository = new UserRepository();
 const userService = new UserService(userRepository);
 
+
 const userController = new UserController(userService);
 router.post('/register', userController.register);
 router.post('/login', userController.login);

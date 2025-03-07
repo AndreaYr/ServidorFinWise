@@ -7,6 +7,7 @@ class DashboardService {
 
   async getData() {
     const data = await this.dashboardRepository.fetchData();
+    console.log('Data:', data);
     return data;
   }
 }

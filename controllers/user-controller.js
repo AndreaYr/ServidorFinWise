@@ -1,5 +1,3 @@
-
-
 class UserController {
 
     constructor(userService) {
@@ -7,15 +5,23 @@ class UserController {
     }
 
     register = async (req, res) => {
-        return res.status(200).json({ 
-            data: await this.userService.register(req.body) 
-        });
+        try{
+            const result = await this.userService.register(req.body);
+            return res.status(200).json({ data: result });
+        }catch (error){
+            return res.status(400).json({ error: error.message });
+        }
+
     }
     
     login = async (req, res) => {
-        return res.status(200).json({ 
-            data: await this.userService.login(req.body) 
-        });
+
+        try{
+            const result = await this.userService.login(req.body);
+            return res.status(200).json({ data: result});
+        }catch (error){
+            return res.status(400).json({ error: error.message});
+        }
     }
 
     profile = async (req, res) => {

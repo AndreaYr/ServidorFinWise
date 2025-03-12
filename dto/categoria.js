@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/sequelize.js';
 
+// Definición del modelo Categoria
 const Categoria = sequelize.define('Categoria', {
   id: {
     type: DataTypes.INTEGER,

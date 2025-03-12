@@ -3,6 +3,7 @@ import { sequelize } from '../database/sequelize.js';
 import Usuario from '../dto/usuario.js';
 import Categoria from '../dto/categoria.js';
 
+// Definición del modelo Transacciones
 const Transacciones = sequelize.define('Transacciones', {
   id: {
     type: DataTypes.INTEGER,
@@ -50,6 +51,7 @@ const Transacciones = sequelize.define('Transacciones', {
   timestamps: false,
 });
 
+// Definición de relaciones
 Transacciones.belongsTo(Usuario, { foreignKey: 'usuario_id' });
 Transacciones.belongsTo(Categoria, { foreignKey: 'categoria_id' });
 

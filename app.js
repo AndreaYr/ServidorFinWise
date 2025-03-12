@@ -15,12 +15,20 @@ const app = express()
   .use(bodyParser.json())
   .use(cookieParser(process.env.COOKIE_SECRET));
 
+// Middleware de autenticación simulado
+app.use((req, res, next) => {
+  req.user = { id: 1 }; // Esto debería ser reemplazado por la lógica real de autenticación
+  console.log('Authenticated User:', req.user); // Agregar log para verificar el userId
+  next();
+});
+
+// Rutas
 app.use('/user', user);
 app.use('/dashboard', dashboard);
 
 async function startServer() {
   try {
-    await connectSequelize();
+    await connectSequelize(); // Conectar a la base de datos
     app.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });

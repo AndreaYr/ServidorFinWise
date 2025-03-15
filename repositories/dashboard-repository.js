@@ -1,4 +1,5 @@
 import Transaction from '../dto/transacciones.js';
+import Goal from '../dto/metas_ahorro.js';
 
 class DashboardRepository {
   // Obtener datos del usuario
@@ -52,6 +53,9 @@ class DashboardRepository {
 
   // Eliminar una transacción
   async deleteTransaction(userId, transactionId) {
+    if (!transactionId) {
+      throw new Error('El ID de la transacción es requerido para eliminarla.');
+    }
     console.log('Eliminando transacción con ID:', transactionId);
     await Transaction.destroy({
       where: {
@@ -64,6 +68,51 @@ class DashboardRepository {
   // Modificar una transacción
   async modifyTransaction(userId, transactionId, transactionData) {
     await this.saveTransaction(userId, transactionData, transactionId);
+  }
+
+  //-------------------------------Metas de ahorro--------------------------------
+  // Guardar una meta de ahorro (crear o modificar)
+  async saveGoal(userId, goalData, goalId = null) {
+    const data = {
+      usuario_id: userId,
+      ...goalData
+    };
+    console.log('Datos a guardar en la meta de ahorro:', data);
+
+    if (goalId) {
+      await Goal.update(data, {
+        where: {
+          meta_id: goalId, // Asegurarse de que el nombre de la columna es correcto
+          usuario_id: userId
+        }
+      });
+    } else {
+      await Goal.create(data);
+    }
+  }
+
+  // Añadir una meta de ahorro
+  async addGoal(userId, goalData) {
+    await this.saveGoal(userId, goalData);
+  }
+
+  // Eliminar una meta de ahorro
+  async deleteGoal(userId, goalId) {
+    if (!goalId) {
+      throw new Error('El ID de la meta de ahorro es requerido para eliminarla.');
+    }
+    console.log('Eliminando meta de ahorro con ID:', goalId);
+    await Goal.destroy({
+      where: {
+        meta_id: goalId, // Asegurarse de que el nombre de la columna es correcto
+        usuario_id: userId
+      }
+    });
+  }
+
+  // Modificar una meta de ahorro
+  async modifyGoal(userId, goalId, goalData){
+    await this.saveGoal(userId,goalData,goalId);
   }
 }
 

@@ -21,4 +21,19 @@ router.post('/addGoal', (req, res) => dashboardController.addGoal(req, res));
 router.delete('/deleteGoal', (req, res) => dashboardController.deleteGoal(req, res));
 router.post('/modifyGoal', (req, res) => dashboardController.modifyGoal(req, res));
 
+// Ruta para manejar preguntas del usuario mediante el modelo de IA
+router.post('/askAI', async (req, res) => {
+  const { question } = req.body;
+  if (!question) {
+    return res.status(400).json({ message: 'La pregunta es requerida' });
+  }
+
+  try {
+    const response = await dashboardController.askAI(req, res);
+    res.json({ answer: response });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al procesar la pregunta', error: error.message });
+  }
+});
+
 export default router;

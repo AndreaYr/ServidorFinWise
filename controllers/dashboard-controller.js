@@ -1,4 +1,5 @@
 import DashboardService from '../services/dashboard-service.js';
+import fetch from 'node-fetch';
 
 class DashboardController {
   constructor() {
@@ -79,8 +80,31 @@ class DashboardController {
     }
     await this.handleRequest(req, res, (userId) => this.dashboardService.modifyGoal(userId, goalId, goalData), 'Meta de ahorro modificada exitosamente');
   }
+
+  // Método para hacer una pregunta a la IA mediante el chatbot
+  async askAI(req, res) {
+    const API_KEY = process.env.GEMINI_API_KEY;
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    const { question } = req.body;
+
+    const body = {
+      contents: [{ parts: [{ text: question }] }]
+    };
+
+    const response = await fetch(URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
+  }
   
 }
-
 
 export default DashboardController;

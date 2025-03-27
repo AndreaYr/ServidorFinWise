@@ -25,9 +25,14 @@ class UserController {
     }
 
     profile = async (req, res) => {
-        return res.status(200).json({ 
-            data: `Tu email leído en tu token es: ${req.dataToken.userEmail}`
-        });
+
+        try{
+            return res.status(200).json({ 
+                data: `Tu email leído en tu token es: ${req.dataToken.userEmail}`
+            });
+        }catch(error){
+            return res.status(400).json({ error: error.message });
+        }
     }
 }
 

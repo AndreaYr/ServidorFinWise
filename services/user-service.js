@@ -33,8 +33,7 @@ class UserService {
     }catch (error){
       throw new Error(error.message);
     }
-    let infoLogin = await this.userRepository.login({email: info.email, password: info.password});
-    return infoLogin;
+    
   }
 
 }

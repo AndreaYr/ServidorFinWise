@@ -1,5 +1,8 @@
 import express from 'express';
 import DashboardController from '../controllers/dashboard-controller.js';
+import validatorAddTransactions from '../middleware/addTransactions-validator.js';
+import validatorDeleteTransactions from '../middleware/deleteTransaction-validator.js';
+import validatorModifyTransactions from '../middleware/modifyTransactions-validator.js';
 
 const router = express.Router();
 const dashboardController = new DashboardController();
@@ -13,8 +16,8 @@ router.get('/data', (req, res, next) => {
 }, (req, res) => dashboardController.getData(req, res));
 
 // Rutas para manejar transacciones
-router.post('/transactions', (req, res) => dashboardController.addTransaction(req, res));
-router.delete('/transactions', (req, res) => dashboardController.deleteTransaction(req, res));
-router.post('/modify', (req, res) => dashboardController.modifyTransaction(req, res));
+router.post('/transactions', validatorAddTransactions.validatorParams, validatorAddTransactions.validator, (req, res) => dashboardController.addTransaction(req, res));
+router.delete('/transactions', validatorDeleteTransactions.validatorParams, validatorDeleteTransactions.validator, (req, res) => dashboardController.deleteTransaction(req, res));
+router.post('/modify', validatorModifyTransactions.validatorParams, validatorModifyTransactions.validator, (req, res) => dashboardController.modifyTransaction(req, res));
 
 export default router;

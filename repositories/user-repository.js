@@ -73,7 +73,7 @@ class UserRepository {
     }
 
     const token = jwt.sign(
-      { userEmail: info.email },
+      {userId: info.id, userEmail: info.email },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );

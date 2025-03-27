@@ -13,7 +13,7 @@ class DashboardController {
       res.json({ message: successMessage, data });
     } catch (error) {
       console.error(`Error en ${successMessage.toLowerCase()}:`, error); // Agregar log para verificar el error
-      res.status(500).json({ message: `Error al ${successMessage.toLowerCase()}` });
+      res.status(500).json({ message: `${successMessage.toLowerCase()}` });
     }
   }
 

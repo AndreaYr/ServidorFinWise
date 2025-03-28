@@ -28,6 +28,25 @@ class DashboardService {
     const data = await this.dashboardRepository.modifyTransaction(userId, transactionId, transactionData);
     return data;
   }
+
+  //------------------------Metas de ahorro-----------------------------------
+
+  // Añadir una meta de ahorro
+  async addGoal(userId, goalData) {
+    const data = await this.dashboardRepository.addGoal(userId, goalData);
+    return data;
+  }
+
+  // Eliminar una meta de ahorro
+  async deleteGoal(userId, goalId) {
+    await this.dashboardRepository.deleteGoal(userId, goalId);
+  }
+
+  // Modificar una meta de ahorro
+  async modifyGoal(userId, goalId, goalData) {
+    const data = await this.dashboardRepository.modifyGoal(userId, goalId, goalData);
+    return data;
+  }
 }
 
 export default DashboardService;

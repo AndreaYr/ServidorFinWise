@@ -16,15 +16,24 @@ router.get('/data', (req, res, next) => {
 }, (req, res) => dashboardController.getData(req, res));
 
 // Rutas para manejar transacciones
-
 router.post('/addTransactions', validatorAddTransactions.validatorParams, validatorAddTransactions.validator, (req, res) => dashboardController.addTransaction(req, res));
 router.delete('/deleteTransactions', validatorDeleteTransactions.validatorParams, validatorDeleteTransactions.validator, (req, res) => dashboardController.deleteTransaction(req, res));
-router.post('/modifyTransactions', validatorModifyTransactions.validatorParams, validatorModifyTransactions.validator, (req, res) => dashboardController.modifyTransaction(req, res));
+router.put('/modifyTransactions', validatorModifyTransactions.validatorParams, validatorModifyTransactions.validator, (req, res) => dashboardController.modifyTransaction(req, res));
 
 // Rutas para manejar metas de ahorro
 router.post('/addGoal', (req, res) => dashboardController.addGoal(req, res));
 router.delete('/deleteGoal', (req, res) => dashboardController.deleteGoal(req, res));
-router.post('/modifyGoal', (req, res) => dashboardController.modifyGoal(req, res));
+router.put('/modifyGoal', (req, res) => dashboardController.modifyGoal(req, res));
+
+// Ruta para manejar recordatorios
+router.post('/addReminder', (req, res) => dashboardController.addReminder(req, res));
+router.delete('/deleteReminder', (req, res) => dashboardController.deleteReminder(req, res));
+router.put('/modifyReminder', (req, res) => dashboardController.modifyReminder(req, res));
+
+//Ruta para manejar el planificador
+router.post('/addExpensePlanner', (req, res) => dashboardController.addExpensePlanner(req, res));
+router.delete('/deleteExpensePlanner', (req, res) => dashboardController.deleteExpensePlanner(req, res)); 
+router.put('/modifyExpensePlanner', (req, res) => dashboardController.modifyExpensePlanner(req, res));
 
 // Ruta para manejar preguntas del usuario mediante el modelo de IA
 router.post('/askAI', async (req, res) => {

@@ -38,8 +38,11 @@ class DashboardService {
   }
 
   // Eliminar una meta de ahorro
-  async deleteGoal(userId, goalId) {
-    await this.dashboardRepository.deleteGoal(userId, goalId);
+  async deleteGoal(userId, meta_id) { // Cambiado de 'goalId' a 'meta_id'
+    console.log('Servicio: Eliminando meta con meta_id:', meta_id, 'userId:', userId); // Registro de depuración
+    const result = await this.dashboardRepository.deleteGoal(userId, meta_id);
+    console.log('Servicio: Resultado de la eliminación:', result); // Registro de depuración
+    return result;
   }
 
   // Modificar una meta de ahorro

@@ -18,10 +18,9 @@ router.get('/data', (req, res, next) => {
 }, (req, res) => dashboardController.getData(req, res));
 
 // Rutas para manejar transacciones
-
 router.post('/addTransactions', validatorAddTransactions.validatorParams, validatorAddTransactions.validator, (req, res) => dashboardController.addTransaction(req, res));
 router.delete('/deleteTransactions', validatorDeleteTransactions.validatorParams, validatorDeleteTransactions.validator, (req, res) => dashboardController.deleteTransaction(req, res));
-router.post('/modifyTransactions', validatorModifyTransactions.validatorParams, validatorModifyTransactions.validator, (req, res) => dashboardController.modifyTransaction(req, res));
+router.put('/modifyTransactions', validatorModifyTransactions.validatorParams, validatorModifyTransactions.validator, (req, res) => dashboardController.modifyTransaction(req, res));
 
 // Rutas para manejar metas de ahorro
 router.post('/addGoal', validatorAddGoal.validatorParams, validatorAddGoal.validator, (req, res) => dashboardController.addGoal(req, res));

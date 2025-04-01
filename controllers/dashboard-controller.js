@@ -30,6 +30,7 @@ class DashboardController {
     }
   }
 
+//---------------------------------------------TRANSACCIONES-----------------------------------//
   // Añadir una transacción
   async addTransaction(req, res) {
     const transactionData = req.body;
@@ -54,6 +55,7 @@ class DashboardController {
     await this.handleRequest(req, res, (userId) => this.dashboardService.modifyTransaction(userId, transactionId, transactionData), 'Transacción modificada exitosamente');
   }
 
+  //---------------------------------META DE AHORRO-----------------------------------//
   // metodo para añadir una meta de ahorro
 
   async addGoal(req, res) {
@@ -94,6 +96,55 @@ class DashboardController {
       return res.status(400).json({ message: 'El ID de la meta de ahorro es requerido para modificarla.' });
     }
     await this.handleRequest(req, res, (userId) => this.dashboardService.modifyGoal(userId, goalId, goalData), 'Meta de ahorro modificada exitosamente');
+  }
+
+  //--------------------------------RECORDATORIO-----------------------------------//
+  // metodo para añadir un recordatorio
+  async addReminder(req, res) {
+    const reminderData = req.body;
+    await this.handleRequest(req, res, (userId) => this.dashboardService.addReminder(userId, reminderData), 'Recordatorio añadido exitosamente');
+  }
+
+  // metodo para eliminar un recordatorio
+  async deleteReminder(req, res) {
+    const { reminderId } = req.body;
+    if (!reminderId) {
+      return res.status(400).json({ message: 'El ID del recordatorio es requerido para eliminarlo.' });
+    }
+    await this.handleRequest(req, res, (userId) => this.dashboardService.deleteReminder(userId, reminderId), 'Recordatorio eliminado exitosamente');
+  }
+
+  // metodo para modificar un recordatorio
+  async modifyReminder(req, res) {
+    const { reminderId, ...reminderData } = req.body;
+    if (!reminderId) {
+      return res.status(400).json({ message: 'El ID del recordatorio es requerido para modificarlo.' });
+    }
+    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyReminder(userId, reminderId, reminderData), 'Recordatorio modificado exitosamente');
+  }
+//-------------------------------PLANIFICADOR-----------------------------------//
+  // metodo para añadir un planificador
+  async addExpensePlanner(req, res) {
+    const plannerData = req.body;
+    await this.handleRequest(req, res, (userId) => this.dashboardService.addExpensePlanner(userId, plannerData), 'Planificador de gastos añadido exitosamente');
+  }
+
+  // metodo para eliminar un planificador
+  async deleteExpensePlanner(req, res) {
+    const { plannerId } = req.body;
+    if (!plannerId) {
+      return res.status(400).json({ message: 'El ID del planificador es requerido para eliminarlo.' });
+    }
+    await this.handleRequest(req, res, (userId) => this.dashboardService.deleteExpensePlanner(userId, plannerId), 'Planificador de gastos eliminado exitosamente');
+  }
+
+  // metodo para modificar un planificador
+  async modifyExpensePlanner(req, res) {
+    const { plannerId, ...plannerData } = req.body;
+    if (!plannerId) {
+      return res.status(400).json({ message: 'El ID del planificador es requerido para modificarlo.' });
+    }
+    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyExpensePlanner(userId, plannerId, plannerData), 'Planificador de gastos modificado exitosamente');
   }
 
   // Método para hacer una pregunta a la IA mediante el chatbot

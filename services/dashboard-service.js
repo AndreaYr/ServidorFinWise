@@ -50,6 +50,45 @@ class DashboardService {
     const data = await this.dashboardRepository.modifyGoal(userId, goalId, goalData);
     return data;
   }
+
+  //------------------------Recordatorios-----------------------------------
+  // Añadir un recordatorio
+  async addReminder(userId, reminderData) {
+    const data = await this.dashboardRepository.addReminder(userId, reminderData);
+    return data;
+  }
+
+  // Eliminar un recordatorio
+  async deleteReminder(userId, reminderId) {
+    await this.dashboardRepository.deleteReminder(userId, reminderId);
+  }
+
+  //modificar un recordatorio
+  async modifyReminder(userId, reminderId, reminderData) {
+    const data = await this.dashboardRepository.modifyReminder(userId, reminderId, reminderData);
+    return data;
+  }
+
+  //------------------------Planificador-----------------------------------
+  // Añadir un planificador de gastos
+  async addExpensePlanner(userId, plannerData) {
+    const data = await this.dashboardRepository.addExpensePlanner(userId, plannerData);
+    return data;
+  }
+
+  // Eliminar un planificador
+  async deleteExpensePlanner(userId, plannerId) {
+    await this.dashboardRepository.deleteExpensePlanner(userId, plannerId);
+  }
+
+  // Modificar un planificador
+  async modifyExpensePlanner(userId, plannerId, plannerData) {
+    const data = await this.dashboardRepository.modifyExpensePlanner(userId, plannerId, plannerData);
+    return data;
+  }
+  
+
+
 }
 
 export default DashboardService;

@@ -48,24 +48,6 @@ class DashboardService {
     return data;
   }
 
-  //------------------------Recordatorios-----------------------------------
-  // Añadir un recordatorio
-  async addReminder(userId, reminderData) {
-    const data = await this.dashboardRepository.addReminder(userId, reminderData);
-    return data;
-  }
-
-  // Eliminar un recordatorio
-  async deleteReminder(userId, reminderId) {
-    await this.dashboardRepository.deleteReminder(userId, reminderId);
-  }
-
-  //modificar un recordatorio
-  async modifyReminder(userId, reminderId, reminderData) {
-    const data = await this.dashboardRepository.modifyReminder(userId, reminderId, reminderData);
-    return data;
-  }
-
   //------------------------Planificador-----------------------------------
   // Añadir un planificador de gastos
   async addExpensePlanner(userId, plannerData) {
@@ -83,9 +65,31 @@ class DashboardService {
     const data = await this.dashboardRepository.modifyExpensePlanner(userId, plannerId, plannerData);
     return data;
   }
-  
 
+  //------------------------Categorías-----------------------------------
+  // Añadir una categoría
+  async addCategory(userId, categoryData) {
+    const data = await this.dashboardRepository.addCategory(userId, categoryData);
+    return data;
+  }
 
+  // Modificar una categoría
+  async modifyCategory(userId, categoryId, categoryData) {
+    const data = await this.dashboardRepository.modifyCategory(userId, categoryId, categoryData);
+    return data;
+  }
+
+  // Eliminar una categoría
+  async deleteCategory(userId, categoryId) {
+    await this.dashboardRepository.deleteCategory(userId, categoryId);
+  }
+
+  //------------------------Historial de chat-----------------------------------
+  // Obtener el historial de conversaciones del usuario con la IA
+  async getChatHistory(userId) {
+    const chatHistory = await this.dashboardRepository.getChatHistory(userId);
+    return chatHistory;
+  }
 }
 
 export default DashboardService;

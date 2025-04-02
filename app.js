@@ -5,15 +5,21 @@ import cookieParser from 'cookie-parser';
 import user from './routes/user.js';
 import dashboard from './routes/dashboard.js';
 import { connectSequelize } from './database/sequelize.js';
-
 import dotenv from 'dotenv';
+import cors from 'cors';
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
 
+const PORT = process.env.PORT || 3000;
 const app = express()
   .use(bodyParser.json())
-  .use(cookieParser(process.env.COOKIE_SECRET));
+  .use(cookieParser(process.env.COOKIE_SECRET))
+  .use(cors({
+    origin: '*',
+    credentials: true,
+    methods: '*',
+    allowedHeaders: '*',
+  }));
 
 // Middleware de autenticación simulado
 app.use((req, res, next) => {

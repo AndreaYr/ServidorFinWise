@@ -1,5 +1,7 @@
 import Transaction from '../dto/transacciones.js';
 import Goal from '../dto/metas_ahorro.js';
+import ChatBot from '../dto/chatBot.js';
+import Planner from '../dto/planificador.js';
 
 class DashboardRepository {
   // Obtener datos del usuario
@@ -203,6 +205,16 @@ class DashboardRepository {
   // Modificar un planificador
   async modifyExpensePlanner(userId, plannerId, plannerData) {
     await this.savePlanner(userId, plannerData, plannerId);
+  }
+
+  //-------------------------------Historial de chat--------------------------------
+  // Obtener el historial de conversaciones del usuario con la IA
+  async getChatHistory(userId) {
+    const chatHistory = await ChatBot.findAll({
+      where: { usuario_id: userId },
+      order: [['id', 'ASC']], // Ordenar por ID para mostrar en orden cronológico
+    });
+    return chatHistory;
   }
 }
 

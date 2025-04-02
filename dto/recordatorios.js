@@ -17,7 +17,7 @@ const Recordatorios = sequelize.define('Recordatorios', {
       model: Usuario,
       key: 'id',
     },
-    onDelete: 'CASCADE',
+    onDelete: 'CASCADE', // Asegúrate de que esta relación sea válida
   },
   meta_id: {
     type: DataTypes.INTEGER,
@@ -26,7 +26,7 @@ const Recordatorios = sequelize.define('Recordatorios', {
       model: MetaAhorro,
       key: 'meta_id',
     },
-    onDelete: 'CASCADE',
+    onDelete: 'SET NULL', // Cambiado a SET NULL para evitar problemas si la meta es eliminada
   },
   nombre: {
     type: DataTypes.STRING,
@@ -39,6 +39,9 @@ const Recordatorios = sequelize.define('Recordatorios', {
   estado: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      isIn: [['pendiente', 'completado']], // Asegúrate de que los valores sean válidos
+    },
   },
 }, {
   tableName: 'recordatorios',

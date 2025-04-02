@@ -16,7 +16,7 @@ const Planificador = sequelize.define('Planificador', {
       model: Usuario,
       key: 'id',
     },
-    onDelete: 'CASCADE',
+    onDelete: 'CASCADE', // Asegúrate de que esta relación sea válida
   },
   nombre: {
     type: DataTypes.STRING,
@@ -25,6 +25,9 @@ const Planificador = sequelize.define('Planificador', {
   tipo_gasto: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      isIn: [['fijo', 'variable']], // Asegúrate de que los valores sean válidos
+    },
   },
   descripcion: {
     type: DataTypes.TEXT,

@@ -25,15 +25,15 @@ router.post('/addGoal', (req, res) => dashboardController.addGoal(req, res));
 router.delete('/deleteGoal', (req, res) => dashboardController.deleteGoal(req, res));
 router.put('/modifyGoal', (req, res) => dashboardController.modifyGoal(req, res));
 
-// Ruta para manejar recordatorios
-router.post('/addReminder', (req, res) => dashboardController.addReminder(req, res));
-router.delete('/deleteReminder', (req, res) => dashboardController.deleteReminder(req, res));
-router.put('/modifyReminder', (req, res) => dashboardController.modifyReminder(req, res));
-
 //Ruta para manejar el planificador
 router.post('/addExpensePlanner', (req, res) => dashboardController.addExpensePlanner(req, res));
 router.delete('/deleteExpensePlanner', (req, res) => dashboardController.deleteExpensePlanner(req, res)); 
 router.put('/modifyExpensePlanner', (req, res) => dashboardController.modifyExpensePlanner(req, res));
+
+// Rutas para manejar categorías
+router.post('/addCategory', (req, res) => dashboardController.addCategory(req, res));
+router.put('/modifyCategory', (req, res) => dashboardController.modifyCategory(req, res));
+router.delete('/deleteCategory', (req, res) => dashboardController.deleteCategory(req, res));
 
 // Ruta para manejar preguntas del usuario mediante el modelo de IA
 router.post('/askAI', async (req, res) => {
@@ -50,5 +50,7 @@ router.post('/askAI', async (req, res) => {
   }
 });
 
+// Ruta para obtener el historial de conversaciones del usuario con la IA
+router.get('/chatHistory', (req, res) => dashboardController.getChatHistory(req, res));
 
 export default router;

@@ -83,30 +83,6 @@ class DashboardController {
     await this.handleRequest(req, res, (userId) => this.dashboardService.modifyGoal(userId, goalId, goalData), 'Meta de ahorro modificada exitosamente');
   }
 
-  //--------------------------------RECORDATORIO-----------------------------------//
-  // metodo para añadir un recordatorio
-  async addReminder(req, res) {
-    const reminderData = req.body;
-    await this.handleRequest(req, res, (userId) => this.dashboardService.addReminder(userId, reminderData), 'Recordatorio añadido exitosamente');
-  }
-
-  // metodo para eliminar un recordatorio
-  async deleteReminder(req, res) {
-    const { reminderId } = req.body;
-    if (!reminderId) {
-      return res.status(400).json({ message: 'El ID del recordatorio es requerido para eliminarlo.' });
-    }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.deleteReminder(userId, reminderId), 'Recordatorio eliminado exitosamente');
-  }
-
-  // metodo para modificar un recordatorio
-  async modifyReminder(req, res) {
-    const { reminderId, ...reminderData } = req.body;
-    if (!reminderId) {
-      return res.status(400).json({ message: 'El ID del recordatorio es requerido para modificarlo.' });
-    }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyReminder(userId, reminderId, reminderData), 'Recordatorio modificado exitosamente');
-  }
 //-------------------------------PLANIFICADOR-----------------------------------//
   // metodo para añadir un planificador
   async addExpensePlanner(req, res) {
@@ -132,6 +108,31 @@ class DashboardController {
     await this.handleRequest(req, res, (userId) => this.dashboardService.modifyExpensePlanner(userId, plannerId, plannerData), 'Planificador de gastos modificado exitosamente');
   }
 
+  //---------------------------------CATEGORÍAS-----------------------------------//
+  // Método para añadir una categoría
+  async addCategory(req, res) {
+    const categoryData = req.body;
+    await this.handleRequest(req, res, (userId) => this.dashboardService.addCategory(userId, categoryData), 'Categoría añadida exitosamente');
+  }
+
+  // Método para modificar una categoría
+  async modifyCategory(req, res) {
+    const { categoryId, ...categoryData } = req.body;
+    if (!categoryId) {
+      return res.status(400).json({ message: 'El ID de la categoría es requerido para modificarla.' });
+    }
+    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyCategory(userId, categoryId, categoryData), 'Categoría modificada exitosamente');
+  }
+
+  // Método para eliminar una categoría
+  async deleteCategory(req, res) {
+    const { categoryId } = req.body;
+    if (!categoryId) {
+      return res.status(400).json({ message: 'El ID de la categoría es requerido para eliminarla.' });
+    }
+    await this.handleRequest(req, res, (userId) => this.dashboardService.deleteCategory(userId, categoryId), 'Categoría eliminada exitosamente');
+  }
+
   // Método para hacer una pregunta a la IA mediante el chatbot
   async askAI(req, res) {
     const API_KEY = process.env.GEMINI_API_KEY;
@@ -154,6 +155,18 @@ class DashboardController {
 
     const data = await response.json();
     return data.candidates[0].content.parts[0].text;
+  }
+
+  // Método para obtener el historial de conversaciones del usuario con la IA
+  async getChatHistory(req, res) {
+    try {
+      const userId = req.user.id; // Asumiendo que el userId está disponible en req.user
+      const chatHistory = await this.dashboardService.getChatHistory(userId);
+      res.json({ message: 'Historial de chat recuperado exitosamente', data: chatHistory });
+    } catch (error) {
+      console.error('Error al recuperar el historial de chat:', error);
+      res.status(500).json({ message: 'Error al recuperar el historial de chat' });
+    }
   }
   
 }

@@ -66,11 +66,26 @@ class DashboardController {
   // metodo para eliminar una meta de ahorro
 
   async deleteGoal(req, res) {
-    const { goalId } = req.body;
-    if (!goalId) {
+    console.log('Cuerpo de la solicitud con:', req.body); // Registro de depuración
+
+    const { meta_id } = req.body; // Cambiado de 'goalId' a 'meta_id'
+    if (!meta_id) {
+      console.log('El ID de la meta de ahorro no fue proporcionado.'); // Registro de depuración
       return res.status(400).json({ message: 'El ID de la meta de ahorro es requerido para eliminarla.' });
     }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.deleteGoal(userId, goalId), 'Meta de ahorro eliminada exitosamente');
+    try {
+      console.log('Llamando al servicio con meta_id:', meta_id, 'userId:', req.user.id); // Registro de depuración
+      const userId = req.user.id;
+
+      // Llamada directa al servicio para depuración
+      const result = await this.dashboardService.deleteGoal(userId, meta_id);
+      console.log('Resultado del servicio:', result); // Registro de depuración
+
+      res.json({ message: 'Meta de ahorro eliminada exitosamente', data: result });
+    } catch (error) {
+      console.error('Error al eliminar la meta de ahorro:', error); // Registro de depuración
+      res.status(500).json({ message: 'Error al eliminar la meta de ahorro', error: error.message });
+    }
   }
 
   // metodo para modificar una meta de ahorro
@@ -135,6 +150,7 @@ class DashboardController {
 
   // Método para hacer una pregunta a la IA mediante el chatbot
   async askAI(req, res) {
+
     const API_KEY = process.env.GEMINI_API_KEY;
     const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
     const { question } = req.body;
@@ -168,7 +184,6 @@ class DashboardController {
       res.status(500).json({ message: 'Error al recuperar el historial de chat' });
     }
   }
-  
 }
 
 export default DashboardController;

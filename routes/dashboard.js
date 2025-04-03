@@ -3,6 +3,8 @@ import DashboardController from '../controllers/dashboard-controller.js';
 import validatorAddTransactions from '../middleware/addTransactions-validator.js';
 import validatorDeleteTransactions from '../middleware/deleteTransaction-validator.js';
 import validatorModifyTransactions from '../middleware/modifyTransactions-validator.js';
+import validatorAddGoal from '../middleware/addGoal-validator.js';
+import validatorDeleteGoal from '../middleware/deleteGoal-validator.js';
 
 const router = express.Router();
 const dashboardController = new DashboardController();
@@ -21,8 +23,12 @@ router.delete('/deleteTransactions', validatorDeleteTransactions.validatorParams
 router.put('/modifyTransactions', validatorModifyTransactions.validatorParams, validatorModifyTransactions.validator, (req, res) => dashboardController.modifyTransaction(req, res));
 
 // Rutas para manejar metas de ahorro
-router.post('/addGoal', (req, res) => dashboardController.addGoal(req, res));
-router.delete('/deleteGoal', (req, res) => dashboardController.deleteGoal(req, res));
+
+router.post('/addGoal', validatorAddGoal.validatorParams, validatorAddGoal.validator, (req, res) => dashboardController.addGoal(req, res));
+router.delete('/deleteGoal', validatorDeleteGoal.validatorParams, validatorDeleteGoal.validator, (req, res) => {
+  console.log('Ruta /deleteGoal alcanzada con cuerpo:', req.body); // Debug log
+  dashboardController.deleteGoal(req, res);
+});
 router.put('/modifyGoal', (req, res) => dashboardController.modifyGoal(req, res));
 
 //Ruta para manejar el planificador

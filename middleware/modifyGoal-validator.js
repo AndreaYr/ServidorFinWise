@@ -1,14 +1,13 @@
 import { check, validationResult} from "express-validator";
 
 const validatorParams = [
-    check('meta_id')
-        .isUUID()
-        .isInt()
+    check('meta_id') // Asegúrate de que este campo es obligatorio
+        .isInt({ min: 1 })
+        .withMessage('El ID de la meta debe ser un número entero mayor a 0')
         .notEmpty(),
     check('usuario_id')
-        .isUUID()
-        .isInt()
-        .notEmpty,
+        .isInt({min: 1})
+        .notEmpty(),
     check('nombre')
         .optional()
         .isString()
@@ -18,7 +17,7 @@ const validatorParams = [
         .notEmpty()
         .custom((value) => {
             if(parseFloat(value) <= 0){
-                console.log('El monto objetivo debe ser mayor a cero');
+                throw new Error('El monto objetivo debe ser mayor a cero');
             }
             return true;
         }),
@@ -36,6 +35,7 @@ const validatorParams = [
 ];
 
 const validator = (req, res, next) => {
+    console.log('Cuerpo de la solicitud:', req.body); // Log para depuración
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.status(400).json({errors: errors.array()});

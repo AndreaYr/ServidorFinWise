@@ -11,6 +11,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
         rejectUnauthorized: false
       }
   },
+
     pool: {
       max: 5,
       min: 0,
@@ -18,6 +19,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
       idle: 10000
     },
   });
+
 
 async function connectSequelize() {
   try {

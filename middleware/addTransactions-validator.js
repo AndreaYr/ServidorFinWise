@@ -3,10 +3,10 @@ import { check, validationResult } from "express-validator";
 const validatorParams = [
     check('usuario_id')
         .notEmpty().withMessage('El id del usuario es obligatorio')
-        .isInt().withMessage('El id del usuario debe ser un número entero'),
+        .isInt({min: 1}),
     check('categoria_id')
         .notEmpty()
-        .isInt(),
+        .isInt({min: 1}),
     check('tipo')
         .notEmpty()
         .isIn(['ingreso', 'gasto']).withMessage('El tipo de transacción debe ser "ingreso" o "gasto"'),

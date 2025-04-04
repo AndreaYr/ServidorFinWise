@@ -2,7 +2,7 @@ import {check, validationResult} from 'express-validator';
 
 const validatorParams  = [
     check('usuario_id')
-        .isInt()
+        .isInt({min: 1})
         .notEmpty(),
     check('nombre')
         .isString()

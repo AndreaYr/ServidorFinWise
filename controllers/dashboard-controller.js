@@ -66,8 +66,6 @@ class DashboardController {
   // metodo para eliminar una meta de ahorro
 
   async deleteGoal(req, res) {
-    console.log('Cuerpo de la solicitud con:', req.body); // Registro de depuración
-
     const { meta_id } = req.body; // Cambiado de 'goalId' a 'meta_id'
     if (!meta_id) {
       console.log('El ID de la meta de ahorro no fue proporcionado.'); // Registro de depuración
@@ -91,11 +89,11 @@ class DashboardController {
   // metodo para modificar una meta de ahorro
 
   async modifyGoal(req, res) {
-    const { goalId, ...goalData } = req.body;
-    if (!goalId) {
+    const { meta_id, ...goalData } = req.body; // Asegúrate de que `meta_id` está siendo extraído
+    if (!meta_id) {
       return res.status(400).json({ message: 'El ID de la meta de ahorro es requerido para modificarla.' });
     }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyGoal(userId, goalId, goalData), 'Meta de ahorro modificada exitosamente');
+    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyGoal(userId, meta_id, goalData), 'Meta de ahorro modificada exitosamente');
   }
 
   //--------------------------------RECORDATORIO-----------------------------------//

@@ -19,7 +19,7 @@ const app = express()
     credentials: true,
     methods: '*',
     allowedHeaders: '*',
-  }));
+  }));  
 
 // Middleware de autenticación simulado
 app.use((req, res, next) => {

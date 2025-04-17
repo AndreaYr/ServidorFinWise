@@ -13,6 +13,10 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 const app = express()
   .use(bodyParser.json())
+  .use((req, res, next) => {
+    console.log('Middleware global - Cuerpo recibido:', req.body); // Log para depuración
+    next();
+  })
   .use(cookieParser(process.env.COOKIE_SECRET))
   .use(cors({
     origin: '*',

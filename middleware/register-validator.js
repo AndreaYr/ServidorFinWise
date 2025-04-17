@@ -13,10 +13,13 @@ const validatorParams = [
         .notEmpty(),
     check('email')
         .isEmail()
+        .normalizeEmail()
         .notEmpty(),
     check('contrasenia')
-        .isLength({min: 6, max: 15}).withMessage('La contraseña debe contener al menos 6 caracteres')
+        .isLength({min: 6}).withMessage('La contraseña debe contener al menos 6 caracteres')
         .notEmpty()
+        .matches(/\d/).withMessage('Debe contener al menos un número')
+        .matches(/[A-Z]/).withMessage('Debe contener al menos una letra mayúscula')
 ];
 
 //Valida si hay errores

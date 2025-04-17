@@ -3,10 +3,14 @@ import { check, validationResult } from 'express-validator';
 const validatorParams = [
     check('email')
         .isEmail()
+        .normalizeEmail()
         .notEmpty(),
     check('contrasenia')
         .notEmpty()
         .isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres')
+        .matches(/\d/).withMessage('Debe contener al menos un número')
+        .matches(/[A-Z]/).withMessage('Debe contener al menos una letra mayúscula')
+        
 ];
 
 function validator(req, res, next) {

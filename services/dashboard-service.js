@@ -87,6 +87,12 @@ class DashboardService {
     await this.dashboardRepository.deleteCategory(userId, categoryId);
   }
 
+  // Obtener categorías
+  async getCategorias(tipo) {
+    const categories = await this.dashboardRepository.getCategorias(tipo);
+    return categories;
+  }
+
   //------------------------Historial de chat-----------------------------------
   // Obtener el historial de conversaciones del usuario con la IA
   async getChatHistory(userId) {

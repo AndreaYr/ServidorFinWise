@@ -18,6 +18,7 @@ router.get('/data', (req, res, next) => {
   next();
 }, (req, res) => dashboardController.getData(req, res));
 
+
 // Rutas para manejar transacciones
 router.post('/addTransactions', validatorAddTransactions.validatorParams, validatorAddTransactions.validator, (req, res) => dashboardController.addTransaction(req, res));
 router.delete('/deleteTransactions', validatorDeleteTransactions.validatorParams, validatorDeleteTransactions.validator, (req, res) => dashboardController.deleteTransaction(req, res));
@@ -38,6 +39,7 @@ router.put('/modifyExpensePlanner', (req, res) => dashboardController.modifyExpe
 router.post('/addCategory', (req, res) => dashboardController.addCategory(req, res));
 router.put('/modifyCategory', (req, res) => dashboardController.modifyCategory(req, res));
 router.delete('/deleteCategory', (req, res) => dashboardController.deleteCategory(req, res));
+router.get('/getCategory', (req, res) => dashboardController.getCategorias(req, res));
 
 // Ruta para manejar preguntas del usuario mediante el modelo de IA
 router.post('/askAI', async (req, res) => {

@@ -19,16 +19,32 @@ class DashboardController {
   }
 
   // Obtener datos del dashboard
-  async getData(req, res) {
-    try {
-      const userId = req.user.id; // Asumiendo que el userId está disponible en req.user
-      console.log('ID del usuario desde el req:', userId); // Agregar log para verificar el userId
-      const data = await this.dashboardService.getData(userId);
-      res.json(data);
-    } catch (error) {
-      res.status(500).json({ message: 'Error al obtener los datos' });
+  // Método para obtener los datos del dashboard
+async getData(req, res) {
+  try {
+    const userId = req.user.id; // Asumiendo que el userId está disponible en req.user
+    console.log('ID del usuario desde el req:', userId); // Agregar log para verificar el userId
+
+    // Llamamos al servicio para obtener todos los datos del usuario
+    const data = await this.dashboardService.getData(userId);
+    
+    // Verificamos si los datos están disponibles
+    if (!data) {
+      return res.status(404).json({ message: 'No se encontraron datos para el usuario' });
     }
+
+    // Devolvemos los datos como JSON
+   
+    const nombreUsuario = data.nombreUsuario; // Asumiendo que el nombre de usuario está en los datos
+    console.log('Nombre de usuario:', nombreUsuario); // Agregar log para verificar el nombre de usuario
+    res.json({ message: 'Datos del dashboard obtenidos exitosamente', data });
+
+  } catch (error) {
+    console.error('Error al obtener los datos del dashboard:', error);
+    res.status(500).json({ message: 'Error al obtener los datos' });
   }
+}
+
 
 //---------------------------------------------TRANSACCIONES-----------------------------------//
   // Añadir una transacción
@@ -146,6 +162,23 @@ class DashboardController {
       return res.status(400).json({ message: 'El ID de la categoría es requerido para eliminarla.' });
     }
     await this.handleRequest(req, res, (userId) => this.dashboardService.deleteCategory(userId, categoryId), 'Categoría eliminada exitosamente');
+  }
+
+  // Método para obtener categorías
+  async getCategorias(req, res) {
+    try {
+      const { tipo } = req.query;
+      const categories = await this.dashboardService.getCategorias(tipo);
+     
+      const dataCategorias = categories.map(cat => cat.dataValues);
+
+      // Log para verificar cómo quedan las categorías
+      console.log('Categorías sin dataValues:', dataCategorias);
+      res.json({ message: 'Categorías recuperadas exitosamente controllers', data: dataCategorias });
+    } catch (error) {
+      console.error('Error al recuperar las categorías:', error);
+      res.status(500).json({ message: 'Error al recuperar las categorías' });
+    }
   }
 
   // Método para hacer una pregunta a la IA mediante el chatbot

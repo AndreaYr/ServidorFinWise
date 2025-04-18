@@ -6,6 +6,7 @@ import validatorModifyTransactions from '../middleware/modifyTransactions-valida
 import validatorAddGoal from '../middleware/addGoal-validator.js';
 import validatorDeleteGoal from '../middleware/deleteGoal-validator.js';
 import validatorModifyGoal from '../middleware/modifyGoal-validator.js';
+import validatorAddExpensePlanner from '../middleware/addExpensePlanner-validator.js';
 
 const router = express.Router();
 const dashboardController = new DashboardController();
@@ -31,7 +32,7 @@ router.delete('/deleteGoal', validatorDeleteGoal.validatorParams, validatorDelet
 router.put('/modifyGoal', validatorModifyGoal.validatorParams, validatorModifyGoal.validator, (req, res) => dashboardController.modifyGoal(req, res));
 
 //Ruta para manejar el planificador
-router.post('/addExpensePlanner', (req, res) => dashboardController.addExpensePlanner(req, res));
+router.post('/addExpensePlanner', validatorAddExpensePlanner.validatorParams, validatorAddExpensePlanner.validator, (req, res) => dashboardController.addExpensePlanner(req, res));
 router.delete('/deleteExpensePlanner', (req, res) => dashboardController.deleteExpensePlanner(req, res)); 
 router.put('/modifyExpensePlanner', (req, res) => dashboardController.modifyExpensePlanner(req, res));
 

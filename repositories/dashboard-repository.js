@@ -1,54 +1,75 @@
-import Transaction from '../dto/transacciones.js';
-import Goal from '../dto/metas_ahorro.js';
+import Transacciones from '../dto/transacciones.js';
+import MetaAhorro from '../dto/metas_ahorro.js';
 import ChatBot from '../dto/chatBot.js';
 import Planner from '../dto/planificador.js';
+import Planificador from '../dto/recordatorios.js';
+import Usuario from '../dto/usuario.js';
 import Reminder from '../dto/recordatorios.js';
 import logSystem from '../dto/logs_sistema.js';
+import Categoria from '../dto/categoria.js';
+import Goal from '../dto/metas_ahorro.js'; // Add this import for the Goal model
 
 class DashboardRepository {
   // Obtener datos del usuario
   async fetchData(userId) {
-    const transactions = await Transaction.findAll({
-      where: { usuario_id: userId }
-    });
+    try {
+      console.log('Buscando datos del usuario en la capa repositorio:', userId);
 
-    const data = {
-      recentActivities: transactions.map(transaction => ({
-        activity: `Usuario ${transaction.usuario_id} hizo un ${transaction.tipo} de ${transaction.monto}`
-      })),
-      totalIncomes: transactions
-        .filter(transaction => transaction.tipo === 'ingreso')
-        .reduce((total, transaction) => total + parseFloat(transaction.monto), 0)
-        .toFixed(2),
-      totalExpenses: transactions
-        .filter(transaction => transaction.tipo === 'gasto')
-        .reduce((total, transaction) => total + parseFloat(transaction.monto), 0)
-        .toFixed(2),
-    };
-    console.log('Datos obtenidos:', data);
-
-    return data;
-  }
-
-  // Guardar una transacción (crear o modificar)
-  async saveTransaction(userId, transactionData, transactionId = null) {
-    const data = {
-      usuario_id: userId,
-      ...transactionData
-    };
-    console.log('Datos a guardar en la transacción:', data);
-
-    if (transactionId) {
-      await Transaction.update(data, {
-        where: {
-          id: transactionId,
-          usuario_id: userId
-        }
-      });
-    } else {
-      await Transaction.create(data);
+      const [
+        resumenFinanzas,
+        metas,
+        recordatorios,
+        planificador,
+        historialChat,
+        usuario
+      ] = await Promise.all([
+        this.getResumenFinanciero(userId),
+        MetaAhorro.findAll({ where: { usuario_id: userId } }),
+        Reminder.findAll({ where: { usuario_id: userId } }),
+        Planificador.findAll({ where: { usuario_id: userId } }),
+        this.getChatHistory(userId),
+        Usuario.findByPk(Number (userId), { attributes: ['nombre'] }),  // Aquí debe ir la llamada a la base de datos
+       
+      ]);
+      
+      console.log('Usuario encontrado:', usuario)
+      return {
+        resumenFinanzas,
+        metas,
+        recordatorios,
+        planificador,
+        historialChat,
+        nombreUsuario: usuario?.nombre || 'Usuario'
+        
+      };
+    } catch (error) {
+      console.error('Error al obtener los datos del usuario:', error);
+      throw new Error('Error interno del servidor');
     }
   }
+
+  // Simulación de resumen financiero — puedes modificar esta lógica
+  async getResumenFinanciero(userId) {
+    const transacciones = await Transacciones.findAll({ where: { usuario_id: userId } });
+
+    const ingresos = transacciones.filter(t => t.tipo === 'ingreso').reduce((sum, t) => sum + t.monto, 0);
+    const egresos = transacciones.filter(t => t.tipo === 'egreso').reduce((sum, t) => sum + t.monto, 0);
+
+    return {
+      transacciones: transacciones,
+      totalIngresos: ingresos,
+      totalEgresos: egresos,
+      balance: ingresos - egresos
+    };
+  }
+
+  async getChatHistory(userId) {
+    return await ChatBot.findAll({
+      where: { usuario_id: userId },
+      order: [['id', 'ASC']],
+    });
+  }
+  
 
   // Añadir una transacción
   async addTransaction(userId, transactionData) {
@@ -224,6 +245,90 @@ class DashboardRepository {
     await this.savePlanner(userId, plannerData, plannerId);
   }
 
+  //-------------------------------Categorías--------------------------------
+  // Guardar una categoría (crear o modificar)
+  async saveCategory(userId, categoryData, categoryId) {
+    const data = {
+      usuario_id: userId,
+      ...categoryData
+    };
+    console.log('Datos a guardar en la categoría:', data);
+
+    if (categoryId) {
+      await Categoria.update(data, {
+        where: {
+          id: categoryId,
+          usuario_id: userId
+        }
+      });
+    } else {
+      await Categoria.create(data);
+    }
+  }
+
+  // Añadir una categoría
+  async addCategory(userId, categoryData) {
+    await this.saveCategory(userId, categoryData);
+  }
+
+  // Modificar una categoría
+  async modifyCategory(data) {
+    try {
+        const { id, nombre, tipo, usuario_id, icono, color } = data;
+
+        // Buscar la categoría existente por ID
+        const categoria = await Categoria.findOne({ where: { id } });
+
+        if (!categoria) {
+            throw new Error(`La categoría con ID ${id} no existe.`);
+        }
+
+        // Actualizar los campos de la categoría
+        categoria.nombre = nombre || categoria.nombre;
+        categoria.tipo = tipo || categoria.tipo;
+        categoria.usuario_id = usuario_id || categoria.usuario_id;
+        categoria.icono = icono || categoria.icono;
+        categoria.color = color || categoria.color;
+
+        // Guardar los cambios
+        await categoria.save();
+
+        return categoria;
+    } catch (error) {
+        console.error('Error al modificar la categoría:', error);
+        throw error;
+    }
+  }
+
+  // Eliminar una categoría
+  async deleteCategory(categoryId) {
+    if (!categoryId) {
+      throw new Error('El ID de la categoría es requerido para eliminarla.');
+    }
+    console.log('Eliminando categoría con ID:', categoryId);
+    await Categoria.destroy({
+      where: {
+        id: categoryId
+      }
+    });
+  }
+  
+  // Obtener categorías
+  async getCategorias(tipo) {
+    const where = {};
+
+    if (tipo) {
+      where.tipo = tipo.toLowerCase(); // Asegura que sea 'ingreso' o 'egreso'
+    }
+  
+    const categories = await Categoria.findAll({
+      where,
+      order: [['id', 'ASC']]
+    });
+  
+    return categories;
+  }
+  
   //-------------------------------Historial de chat--------------------------------
   // Obtener el historial de conversaciones del usuario con la IA
   async getChatHistory(userId) {

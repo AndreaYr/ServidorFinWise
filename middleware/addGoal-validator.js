@@ -1,3 +1,4 @@
+import Goal from '../dto/metas_ahorro.js';
 import {check, validationResult} from 'express-validator';
 
 const validatorParams  = [
@@ -7,7 +8,14 @@ const validatorParams  = [
     check('nombre')
         .isString()
         .notEmpty()
-        .isLength({min: 3, max: 200}),
+        .isLength({min: 3, max: 200})
+        .custom(async (value, { req }) => {
+            const meta = await Goal.findOne({ where: { nombre: req.body.nombre } }); // Excluye el planificador actual
+            if (meta) {
+                throw new Error('El nombre ya está en uso');
+            }
+            return true;
+        }),
     check('monto_objetivo')
         .isDecimal()
         .notEmpty()

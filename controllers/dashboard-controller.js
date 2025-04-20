@@ -19,16 +19,32 @@ class DashboardController {
   }
 
   // Obtener datos del dashboard
-  async getData(req, res) {
-    try {
-      const userId = req.user.id; // Asumiendo que el userId está disponible en req.user
-      console.log('ID del usuario desde el req:', userId); // Agregar log para verificar el userId
-      const data = await this.dashboardService.getData(userId);
-      res.json(data);
-    } catch (error) {
-      res.status(500).json({ message: 'Error al obtener los datos' });
+  // Método para obtener los datos del dashboard
+async getData(req, res) {
+  try {
+    const userId = req.user.id; // Asumiendo que el userId está disponible en req.user
+    console.log('ID del usuario desde el req:', userId); // Agregar log para verificar el userId
+
+    // Llamamos al servicio para obtener todos los datos del usuario
+    const data = await this.dashboardService.getData(userId);
+    
+    // Verificamos si los datos están disponibles
+    if (!data) {
+      return res.status(404).json({ message: 'No se encontraron datos para el usuario' });
     }
+
+    // Devolvemos los datos como JSON
+   
+    const nombreUsuario = data.nombreUsuario; // Asumiendo que el nombre de usuario está en los datos
+    console.log('Nombre de usuario:', nombreUsuario); // Agregar log para verificar el nombre de usuario
+    res.json({ message: 'Datos del dashboard obtenidos exitosamente', data });
+
+  } catch (error) {
+    console.error('Error al obtener los datos del dashboard:', error);
+    res.status(500).json({ message: 'Error al obtener los datos' });
   }
+}
+
 
 //---------------------------------------------TRANSACCIONES-----------------------------------//
   // Añadir una transacción
@@ -105,20 +121,25 @@ class DashboardController {
 
   // metodo para eliminar un planificador
   async deleteExpensePlanner(req, res) {
-    const { plannerId } = req.body;
-    if (!plannerId) {
-      return res.status(400).json({ message: 'El ID del planificador es requerido para eliminarlo.' });
+    try {
+      const { id } = req.body;
+      if (!id) {
+        return res.status(400).json({ message: 'El ID del planificador es requerido para eliminarlo.' });
+      }
+      await this.handleRequest(req, res, (userId) => this.dashboardService.deleteExpensePlanner(userId, id), 'Planificador de gastos eliminado exitosamente');
+    } catch (error) {
+      console.error('Error en deleteExpensePlanner:', error);
+      res.status(500).json({ message: 'Error al eliminar el planificador', error: error.message });
     }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.deleteExpensePlanner(userId, plannerId), 'Planificador de gastos eliminado exitosamente');
   }
 
   // metodo para modificar un planificador
   async modifyExpensePlanner(req, res) {
-    const { plannerId, ...plannerData } = req.body;
-    if (!plannerId) {
+    const { id, ...plannerData } = req.body;
+    if (!id) {
       return res.status(400).json({ message: 'El ID del planificador es requerido para modificarlo.' });
     }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyExpensePlanner(userId, plannerId, plannerData), 'Planificador de gastos modificado exitosamente');
+    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyExpensePlanner(userId, id, plannerData), 'Planificador de gastos modificado exitosamente');
   }
 
   //---------------------------------CATEGORÍAS-----------------------------------//
@@ -130,20 +151,55 @@ class DashboardController {
 
   // Método para modificar una categoría
   async modifyCategory(req, res) {
-    const { categoryId, ...categoryData } = req.body;
-    if (!categoryId) {
-      return res.status(400).json({ message: 'El ID de la categoría es requerido para modificarla.' });
+    try {
+        const { id, nombre, tipo, icono, color } = req.body;
+
+        // Validar que los campos obligatorios estén presentes
+        if (!id) {
+            return res.status(400).json({ message: 'Los campos id y tipo son obligatorios.' });
+        }
+
+        const data = {
+            id,
+            nombre,
+            tipo,
+            icono, // Manejar icono como opcional
+            color, // Manejar color como opcional
+            usuario_id: req.user.id, // Asegurar que el usuario autenticado se asigne correctamente
+        };
+
+        const result = await this.dashboardService.modifyCategory(data);
+        res.json({ message: 'Categoría modificada exitosamente', data: result });
+    } catch (error) {
+        console.error('Error en categoría modificada exitosamente:', error);
+        res.status(500).json({ message: 'Error al modificar la categoría', error: error.message });
     }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyCategory(userId, categoryId, categoryData), 'Categoría modificada exitosamente');
   }
 
   // Método para eliminar una categoría
   async deleteCategory(req, res) {
-    const { categoryId } = req.body;
-    if (!categoryId) {
+    const { id } = req.body;
+    if (!id) {
       return res.status(400).json({ message: 'El ID de la categoría es requerido para eliminarla.' });
     }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.deleteCategory(userId, categoryId), 'Categoría eliminada exitosamente');
+    await this.handleRequest(req, res, () => this.dashboardService.deleteCategory(id), 'Categoría eliminada exitosamente');
+  }
+
+  // Método para obtener categorías
+  async getCategorias(req, res) {
+    try {
+      const { tipo } = req.query;
+      const categories = await this.dashboardService.getCategorias(tipo);
+     
+      const dataCategorias = categories.map(cat => cat.dataValues);
+
+      // Log para verificar cómo quedan las categorías
+      console.log('Categorías sin dataValues:', dataCategorias);
+      res.json({ message: 'Categorías recuperadas exitosamente controllers', data: dataCategorias });
+    } catch (error) {
+      console.error('Error al recuperar las categorías:', error);
+      res.status(500).json({ message: 'Error al recuperar las categorías' });
+    }
   }
 
   // Método para hacer una pregunta a la IA mediante el chatbot

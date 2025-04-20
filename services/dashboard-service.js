@@ -77,8 +77,8 @@ class DashboardService {
   }
 
   // Modificar una categoría
-  async modifyCategory(userId, categoryId, categoryData) {
-    const data = await this.dashboardRepository.modifyCategory(userId, categoryId, categoryData);
+  async modifyCategory(id, categoryData) {
+    const data = await this.dashboardRepository.modifyCategory(id, categoryData);
     return data;
   }
 

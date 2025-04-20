@@ -11,6 +11,7 @@ import validatorDeleteExpensePlanner from '../middleware/deleteExpensePlanner-va
 import validatorModifyExpensePlanner from '../middleware/modifyExpensePlanner-validator.js';
 import validatorAddCategory from '../middleware/addCategory-validator.js';
 import validatorDeleteCategory from '../middleware/deleteCategory-validator.js';
+import validatorModifyCategory from '../middleware/modifyCategory-validator.js';
 
 const router = express.Router();
 const dashboardController = new DashboardController();
@@ -42,7 +43,7 @@ router.put('/modifyExpensePlanner', validatorModifyExpensePlanner.validatorParam
 
 // Rutas para manejar categorías
 router.post('/addCategory', validatorAddCategory.validatorParams, validatorAddCategory.validator, (req, res) => dashboardController.addCategory(req, res));
-router.put('/modifyCategory', (req, res) => dashboardController.modifyCategory(req, res));
+router.put('/modifyCategory', validatorModifyCategory.validatorParams, validatorModifyCategory.validator, (req, res) => dashboardController.modifyCategory(req, res));
 router.delete('/deleteCategory', validatorDeleteCategory.validatorParams, validatorDeleteCategory.validator, (req, res) => dashboardController.deleteCategory(req, res));
 router.get('/getCategory', (req, res) => dashboardController.getCategorias(req, res));
 

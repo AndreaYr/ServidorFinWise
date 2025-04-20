@@ -151,11 +151,29 @@ async getData(req, res) {
 
   // Método para modificar una categoría
   async modifyCategory(req, res) {
-    const { categoryId, ...categoryData } = req.body;
-    if (!categoryId) {
-      return res.status(400).json({ message: 'El ID de la categoría es requerido para modificarla.' });
+    try {
+        const { id, nombre, tipo, icono, color } = req.body;
+
+        // Validar que los campos obligatorios estén presentes
+        if (!id) {
+            return res.status(400).json({ message: 'Los campos id y tipo son obligatorios.' });
+        }
+
+        const data = {
+            id,
+            nombre,
+            tipo,
+            icono, // Manejar icono como opcional
+            color, // Manejar color como opcional
+            usuario_id: req.user.id, // Asegurar que el usuario autenticado se asigne correctamente
+        };
+
+        const result = await this.dashboardService.modifyCategory(data);
+        res.json({ message: 'Categoría modificada exitosamente', data: result });
+    } catch (error) {
+        console.error('Error en categoría modificada exitosamente:', error);
+        res.status(500).json({ message: 'Error al modificar la categoría', error: error.message });
     }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyCategory(userId, categoryId, categoryData), 'Categoría modificada exitosamente');
   }
 
   // Método para eliminar una categoría

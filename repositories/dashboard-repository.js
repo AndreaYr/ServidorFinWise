@@ -247,7 +247,7 @@ class DashboardRepository {
 
   //-------------------------------Categorías--------------------------------
   // Guardar una categoría (crear o modificar)
-  async saveCategory(userId, categoryData, categoryId = null) {
+  async saveCategory(userId, categoryData, categoryId) {
     const data = {
       usuario_id: userId,
       ...categoryData
@@ -272,8 +272,32 @@ class DashboardRepository {
   }
 
   // Modificar una categoría
-  async modifyCategory(userId, categoryId, categoryData) {
-    await this.saveCategory(userId, categoryData, categoryId);
+  async modifyCategory(data) {
+    try {
+        const { id, nombre, tipo, usuario_id, icono, color } = data;
+
+        // Buscar la categoría existente por ID
+        const categoria = await Categoria.findOne({ where: { id } });
+
+        if (!categoria) {
+            throw new Error(`La categoría con ID ${id} no existe.`);
+        }
+
+        // Actualizar los campos de la categoría
+        categoria.nombre = nombre || categoria.nombre;
+        categoria.tipo = tipo || categoria.tipo;
+        categoria.usuario_id = usuario_id || categoria.usuario_id;
+        categoria.icono = icono || categoria.icono;
+        categoria.color = color || categoria.color;
+
+        // Guardar los cambios
+        await categoria.save();
+
+        return categoria;
+    } catch (error) {
+        console.error('Error al modificar la categoría:', error);
+        throw error;
+    }
   }
 
   // Eliminar una categoría

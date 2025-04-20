@@ -12,7 +12,8 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 const app = express()
-  .use(bodyParser.json())
+  .use(express.json()) // Asegúrate de que este middleware esté configurado
+  .use(bodyParser.json()) // Si usas body-parser, asegúrate de incluirlo
   .use((req, res, next) => {
     console.log('Middleware global - Cuerpo recibido:', req.body); // Log para depuración
     next();

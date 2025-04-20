@@ -121,20 +121,25 @@ async getData(req, res) {
 
   // metodo para eliminar un planificador
   async deleteExpensePlanner(req, res) {
-    const { plannerId } = req.body;
-    if (!plannerId) {
-      return res.status(400).json({ message: 'El ID del planificador es requerido para eliminarlo.' });
+    try {
+      const { id } = req.body;
+      if (!id) {
+        return res.status(400).json({ message: 'El ID del planificador es requerido para eliminarlo.' });
+      }
+      await this.handleRequest(req, res, (userId) => this.dashboardService.deleteExpensePlanner(userId, id), 'Planificador de gastos eliminado exitosamente');
+    } catch (error) {
+      console.error('Error en deleteExpensePlanner:', error);
+      res.status(500).json({ message: 'Error al eliminar el planificador', error: error.message });
     }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.deleteExpensePlanner(userId, plannerId), 'Planificador de gastos eliminado exitosamente');
   }
 
   // metodo para modificar un planificador
   async modifyExpensePlanner(req, res) {
-    const { plannerId, ...plannerData } = req.body;
-    if (!plannerId) {
+    const { id, ...plannerData } = req.body;
+    if (!id) {
       return res.status(400).json({ message: 'El ID del planificador es requerido para modificarlo.' });
     }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyExpensePlanner(userId, plannerId, plannerData), 'Planificador de gastos modificado exitosamente');
+    await this.handleRequest(req, res, (userId) => this.dashboardService.modifyExpensePlanner(userId, id, plannerData), 'Planificador de gastos modificado exitosamente');
   }
 
   //---------------------------------CATEGORÍAS-----------------------------------//

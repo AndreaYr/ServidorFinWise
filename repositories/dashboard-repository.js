@@ -7,6 +7,7 @@ import Usuario from '../dto/usuario.js';
 import Reminder from '../dto/recordatorios.js';
 import logSystem from '../dto/logs_sistema.js';
 import Categoria from '../dto/categoria.js';
+import Goal from '../dto/metas_ahorro.js'; // Add this import for the Goal model
 
 class DashboardRepository {
   // Obtener datos del usuario

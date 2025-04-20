@@ -7,7 +7,14 @@ const validatorParams =[
     check('nombre')
         .notEmpty()
         .isString()
-        .isLength({min: 3, max: 50}),
+        .isLength({min: 3, max: 50})
+        .custom(async (value, { req }) => {
+            const planificador = await Planificador.findOne({ where: { nombre: req.body.nombre } }); // Excluye el planificador actual
+            if (planificador) {
+                throw new Error('El nombre del planificador ya está en uso');
+            }
+            return true;
+        }),
     check('tipo_gasto')
         .notEmpty()
         .isString()

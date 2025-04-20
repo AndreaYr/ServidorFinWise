@@ -160,11 +160,11 @@ async getData(req, res) {
 
   // Método para eliminar una categoría
   async deleteCategory(req, res) {
-    const { categoryId } = req.body;
-    if (!categoryId) {
+    const { id } = req.body;
+    if (!id) {
       return res.status(400).json({ message: 'El ID de la categoría es requerido para eliminarla.' });
     }
-    await this.handleRequest(req, res, (userId) => this.dashboardService.deleteCategory(userId, categoryId), 'Categoría eliminada exitosamente');
+    await this.handleRequest(req, res, () => this.dashboardService.deleteCategory(id), 'Categoría eliminada exitosamente');
   }
 
   // Método para obtener categorías

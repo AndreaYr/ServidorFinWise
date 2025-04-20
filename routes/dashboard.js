@@ -9,6 +9,8 @@ import validatorModifyGoal from '../middleware/modifyGoal-validator.js';
 import validatorAddExpensePlanner from '../middleware/addExpensePlanner-validator.js';
 import validatorDeleteExpensePlanner from '../middleware/deleteExpensePlanner-validator.js';
 import validatorModifyExpensePlanner from '../middleware/modifyExpensePlanner-validator.js';
+import validatorAddCategory from '../middleware/addCategory-validator.js';
+import validatorDeleteCategory from '../middleware/deleteCategory-validator.js';
 
 const router = express.Router();
 const dashboardController = new DashboardController();
@@ -39,9 +41,9 @@ router.delete('/deleteExpensePlanner', validatorDeleteExpensePlanner.validatorPa
 router.put('/modifyExpensePlanner', validatorModifyExpensePlanner.validatorParams, validatorModifyExpensePlanner.validator, (req, res) => dashboardController.modifyExpensePlanner(req, res));
 
 // Rutas para manejar categorías
-router.post('/addCategory', (req, res) => dashboardController.addCategory(req, res));
+router.post('/addCategory', validatorAddCategory.validatorParams, validatorAddCategory.validator, (req, res) => dashboardController.addCategory(req, res));
 router.put('/modifyCategory', (req, res) => dashboardController.modifyCategory(req, res));
-router.delete('/deleteCategory', (req, res) => dashboardController.deleteCategory(req, res));
+router.delete('/deleteCategory', validatorDeleteCategory.validatorParams, validatorDeleteCategory.validator, (req, res) => dashboardController.deleteCategory(req, res));
 router.get('/getCategory', (req, res) => dashboardController.getCategorias(req, res));
 
 // Ruta para manejar preguntas del usuario mediante el modelo de IA

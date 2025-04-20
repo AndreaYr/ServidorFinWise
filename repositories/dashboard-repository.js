@@ -277,15 +277,14 @@ class DashboardRepository {
   }
 
   // Eliminar una categoría
-  async deleteCategory(userId, categoryId) {
+  async deleteCategory(categoryId) {
     if (!categoryId) {
       throw new Error('El ID de la categoría es requerido para eliminarla.');
     }
     console.log('Eliminando categoría con ID:', categoryId);
     await Categoria.destroy({
       where: {
-        id: categoryId,
-        usuario_id: userId
+        id: categoryId
       }
     });
   }

@@ -83,8 +83,8 @@ class DashboardService {
   }
 
   // Eliminar una categoría
-  async deleteCategory(userId, categoryId) {
-    await this.dashboardRepository.deleteCategory(userId, categoryId);
+  async deleteCategory( id) {
+    await this.dashboardRepository.deleteCategory(id);
   }
 
   // Obtener categorías

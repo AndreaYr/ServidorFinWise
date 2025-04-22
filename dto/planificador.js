@@ -33,10 +33,6 @@ const Planificador = sequelize.define('Planificador', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  icono: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
   monto_previsto: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,

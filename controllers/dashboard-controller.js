@@ -37,7 +37,10 @@ async getData(req, res) {
    
     const nombreUsuario = data.nombreUsuario; // Asumiendo que el nombre de usuario está en los datos
     console.log('Nombre de usuario:', nombreUsuario); // Agregar log para verificar el nombre de usuario
-    res.json({ message: 'Datos del dashboard obtenidos exitosamente', data });
+    res.json({ 
+      message: 'Datos del dashboard obtenidos exitosamente', 
+      data 
+    });
 
   } catch (error) {
     console.error('Error al obtener los datos del dashboard:', error);

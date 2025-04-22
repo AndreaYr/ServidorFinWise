@@ -9,6 +9,7 @@ class DashboardService {
   async getData(userId) {
     console.log('Buscando datos del usuario:', userId);
     const data = await this.dashboardRepository.fetchData(userId);
+    console.log('--- Resultado Procesado getResumenFinanciero ---:', JSON.stringify(data, null, 2)); // ¡Añade esto!
     return data;
   }
 

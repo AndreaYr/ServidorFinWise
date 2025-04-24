@@ -18,8 +18,8 @@ class UserController {
     login = async (req, res) => {
 
         try{
-            const result = await this.userService.login(req.body);
-            return res.status(200).json({ data: result});
+            const { token, usuario } = await this.userService.login(req.body);
+            return res.status(200).json({ message: 'Inicio de sesión exitoso', token, usuario });
         }catch (error){
             return res.status(400).json({ error: error.message});
         }

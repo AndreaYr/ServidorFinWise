@@ -95,6 +95,22 @@ class DashboardService {
   }
 
   //------------------------Historial de chat-----------------------------------
+
+  async askAI(question) {
+
+    if (!question || question.trim().length === 0) {
+      throw new Error('La pregunta no puede estar vacía');
+    }
+
+    try {
+      // Interacción con el repositorio para obtener la respuesta de la IA
+      const answer = await this.dashboardRepository.askAI(question);
+      return answer;
+    } catch (error) {
+      throw new Error('Error al obtener la respuesta de la IA: ' + error.message);
+    }
+  }
+
   // Obtener el historial de conversaciones del usuario con la IA
   async getChatHistory(userId) {
     const chatHistory = await this.dashboardRepository.getChatHistory(userId);

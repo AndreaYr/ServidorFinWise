@@ -7,6 +7,7 @@ import dashboard from './routes/dashboard.js';
 import { connectSequelize } from './database/sequelize.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import verifyToken from './middleware/verifyToken.js';
 dotenv.config();
 
 
@@ -25,7 +26,6 @@ const app = express()
     methods: '*',
     allowedHeaders: '*',
   }));  
-
 // Middleware de autenticación simulado
 app.use((req, res, next) => {
   req.user = { id: 10 }; // Esto debería ser reemplazado por la lógica real de autenticación
@@ -36,6 +36,10 @@ app.use((req, res, next) => {
 
 
 // Rutas
+
+
+
+// Rutas públicas (no requieren autenticación)
 app.use('/user', user);
 app.use('/dashboard', dashboard);
 

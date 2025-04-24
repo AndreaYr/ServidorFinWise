@@ -6,6 +6,7 @@ import Reminder from '../dto/recordatorios.js';
 import Usuario from '../dto/usuario.js';
 import Categoria from '../dto/categoria.js';
 import Goal from '../dto/metas_ahorro.js'; // Agregar para metas de ahorro
+import axios from 'axios'; // Asegúrate de tener axios instalado
 
 class DashboardRepository {
   // Obtener datos del usuario
@@ -457,6 +458,29 @@ class DashboardRepository {
   }
   
   //-------------------------------Historial de chat--------------------------------
+
+  async askAI(question) {
+    
+    // Realizamos una solicitud HTTP POST a la API de Gemini
+    const API_KEY = process.env.GEMINI_API_KEY;
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+  try{
+
+    const { question } = req.body; 
+      const body = { contents: [{ parts: [{ text: question }] }] }; 
+      const response = await fetch(URL, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body) }); if (!response.ok) { throw new Error(`Error HTTP: ${response.status}`); } 
+      const data = await response.json();
+          
+      return data.candidates[0].content.parts[0].text;
+  }catch (error) {
+      console.error('Error al comunicarse con la API de Gemini:', error);
+      throw new Error('Error al obtener respuesta de la IA.');
+    }
+  }
+
+
   // Obtener el historial de conversaciones del usuario con la IA
   async getChatHistory(userId) {
     const chatHistory = await ChatBot.findAll({

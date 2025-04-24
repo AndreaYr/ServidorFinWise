@@ -12,6 +12,7 @@ import validatorModifyExpensePlanner from '../middleware/modifyExpensePlanner-va
 import validatorAddCategory from '../middleware/addCategory-validator.js';
 import validatorDeleteCategory from '../middleware/deleteCategory-validator.js';
 import validatorModifyCategory from '../middleware/modifyCategory-validator.js';
+//import validationIA from '../middleware/ia-validator.js';
 
 const router = express.Router();
 const dashboardController = new DashboardController();
@@ -48,7 +49,7 @@ router.delete('/deleteCategory', validatorDeleteCategory.validatorParams, valida
 router.get('/getCategory', (req, res) => dashboardController.getCategorias(req, res));
 
 // Ruta para manejar preguntas del usuario mediante el modelo de IA
-router.post('/askAI', async (req, res) => {
+router.post('/askAI',  async (req, res) => {
   const { question } = req.body;
   if (!question) {
     return res.status(400).json({ message: 'La pregunta es requerida' });
@@ -56,9 +57,9 @@ router.post('/askAI', async (req, res) => {
 
   try {
     const response = await dashboardController.askAI(req, res);
-    res.json({ answer: response });
+    res.json({ response });
   } catch (error) {
-    res.status(500).json({ message: 'Error al procesar la pregunta', error: error.message });
+    return res.status(500).json({ message: 'Error al procesar la pregunta', error: error.message });
   }
 });
 

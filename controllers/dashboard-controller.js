@@ -208,26 +208,19 @@ async getData(req, res) {
   // Método para hacer una pregunta a la IA mediante el chatbot
   async askAI(req, res) {
 
-    const API_KEY = process.env.GEMINI_API_KEY;
-    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
     const { question } = req.body;
 
-    const body = {
-      contents: [{ parts: [{ text: question }] }]
-    };
-
-    const response = await fetch(URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
+    if (!question) {
+      return res.status(400).json({ message: 'La pregunta es requerida' });
     }
 
-    const data = await response.json();
-    return data.candidates[0].content.parts[0].text;
+    try {
+      const answer = await this.dashboardService.askAI(question);  // Llamada al servicio
+      return answer;
+    } catch (error) {
+      return res.status(500).json({ message: 'Error al procesar la pregunta', error: error.message });
+    }
+
   }
 
   // Método para obtener el historial de conversaciones del usuario con la IA

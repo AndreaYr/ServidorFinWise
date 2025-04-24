@@ -20,16 +20,16 @@ const MetaAhorro = sequelize.define('MetaAhorro', {
   },
   nombre: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: false, // Asegúrate de que este campo sea necesario
   },
   monto_objetivo: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
   },
   monto_actual: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: true,
-    defaultValue: 0.00,
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    defaultValue: 0, // Valor predeterminado
   },
   fecha_limite: {
     type: DataTypes.DATE,

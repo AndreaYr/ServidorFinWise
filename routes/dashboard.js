@@ -27,14 +27,17 @@ router.get('/data', (req, res, next) => {
 
 
 // Rutas para manejar transacciones
-router.post('/addTransactions', validatorAddTransactions.validatorParams, validatorAddTransactions.validator, (req, res) => dashboardController.addTransaction(req, res));
-router.delete('/deleteTransactions', validatorDeleteTransactions.validatorParams, validatorDeleteTransactions.validator, (req, res) => dashboardController.deleteTransaction(req, res));
-router.put('/modifyTransactions', validatorModifyTransactions.validatorParams, validatorModifyTransactions.validator, (req, res) => dashboardController.modifyTransaction(req, res));
+router.post('/addTransactions', (req, res) => dashboardController.addTransaction(req, res));
+router.delete('/deleteTransactions', (req, res) => dashboardController.deleteTransaction(req, res));
+router.put('/modifyTransactions',(req, res) => dashboardController.modifyTransaction(req, res));
 
 // Rutas para manejar metas de ahorro
-router.post('/addGoal', validatorAddGoal.validatorParams, validatorAddGoal.validator, (req, res) => dashboardController.addGoal(req, res));
-router.delete('/deleteGoal', validatorDeleteGoal.validatorParams, validatorDeleteGoal.validator, (req, res) => dashboardController.deleteGoal(req, res));
-router.put('/modifyGoal', validatorModifyGoal.validatorParams, validatorModifyGoal.validator, (req, res) => dashboardController.modifyGoal(req, res));
+router.post('/addGoal',  (req, res) => dashboardController.addGoal(req, res));
+router.delete('/deleteGoal', (req, res) => {
+  console.log('Middleware global - Cuerpo recibido:', req.body); // Registro de depuración
+  dashboardController.deleteGoal(req, res);
+});
+router.put('/modifyGoal', (req, res) => dashboardController.modifyGoal(req, res));
 
 //Ruta para manejar el planificador
 router.post('/addExpensePlanner', (req, res) => dashboardController.addExpensePlanner(req, res));
@@ -42,9 +45,9 @@ router.delete('/deleteExpensePlanner', (req, res) => dashboardController.deleteE
 router.put('/modifyExpensePlanner', (req, res) => dashboardController.modifyExpensePlanner(req, res));
 
 // Rutas para manejar categorías
-router.post('/addCategory', validatorAddCategory.validatorParams, validatorAddCategory.validator, (req, res) => dashboardController.addCategory(req, res));
-router.put('/modifyCategory', validatorModifyCategory.validatorParams, validatorModifyCategory.validator, (req, res) => dashboardController.modifyCategory(req, res));
-router.delete('/deleteCategory', validatorDeleteCategory.validatorParams, validatorDeleteCategory.validator, (req, res) => dashboardController.deleteCategory(req, res));
+router.post('/addCategory',(req, res) => dashboardController.addCategory(req, res));
+router.put('/modifyCategory', (req, res) => dashboardController.modifyCategory(req, res));
+router.delete('/deleteCategory', (req, res) => dashboardController.deleteCategory(req, res));
 router.get('/getCategory', (req, res) => dashboardController.getCategorias(req, res));
 
 // Ruta para manejar preguntas del usuario mediante el modelo de IA

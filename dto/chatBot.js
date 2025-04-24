@@ -18,9 +18,13 @@ const ChatBot = sequelize.define('ChatBot', {
     },
     onDelete: 'CASCADE',
   },
-  descripcion: {
+  pregunta: {
     type: DataTypes.TEXT,
     allowNull: true,
+  },
+  respuesta: {
+    type: DataTypes.TEXT,
+    allowNull: true, 
   },
 }, {
   tableName: 'chat_bot',

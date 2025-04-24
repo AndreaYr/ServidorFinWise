@@ -99,6 +99,9 @@ class DashboardService {
   async askAI(question) {
     try{
       const answer = await this.dashboardRepository.askAI(question);
+      console.log('Valor de question antes de guardar:', question);
+      console.log('Valor de answer antes de guardar:', answer);
+  
     await this.dashboardRepository.saveChat(question, answer); // Guardar la pregunta y respuesta en el historial
     return answer
     }catch (error) {

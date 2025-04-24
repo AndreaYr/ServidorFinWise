@@ -207,16 +207,15 @@ async getData(req, res) {
 
   // Método para hacer una pregunta a la IA mediante el chatbot
   async askAI(req, res) {
-
-    const { question } = req.body;
-
-    if (!question) {
-      return res.status(400).json({ message: 'La pregunta es requerida' });
-    }
-
     try {
-      const answer = await this.dashboardService.askAI(question);  // Llamada al servicio
-      return answer;
+      const { question } = req.body;
+
+      if (!question || question.trim() === '') {
+        return res.status(400).json({ error: 'La pregunta es requerida.' });
+      }
+
+      const response = await this.dashboardService.askAI(question);  // Llamada al servicio
+      return res.status(200).json({ respuesta: response });
     } catch (error) {
       return res.status(500).json({ message: 'Error al procesar la pregunta', error: error.message });
     }

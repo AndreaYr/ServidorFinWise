@@ -49,19 +49,8 @@ router.delete('/deleteCategory', validatorDeleteCategory.validatorParams, valida
 router.get('/getCategory', (req, res) => dashboardController.getCategorias(req, res));
 
 // Ruta para manejar preguntas del usuario mediante el modelo de IA
-router.post('/askAI',  async (req, res) => {
-  const { question } = req.body;
-  if (!question) {
-    return res.status(400).json({ message: 'La pregunta es requerida' });
-  }
-
-  try {
-    const response = await dashboardController.askAI(req, res);
-    res.json({ response });
-  } catch (error) {
-    return res.status(500).json({ message: 'Error al procesar la pregunta', error: error.message });
-  }
-});
+router.post('/askAI', (req, res) => dashboardController.askAI(req, res));
+ 
 
 // Ruta para obtener el historial de conversaciones del usuario con la IA
 router.get('/chatHistory', (req, res) => dashboardController.getChatHistory(req, res));

@@ -480,10 +480,15 @@ class DashboardRepository {
 
   try{
 
-    const { question } = req.body; 
-      const body = { contents: [{ parts: [{ text: question }] }] }; 
-      const response = await fetch(URL, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body) }); if (!response.ok) { throw new Error(`Error HTTP: ${response.status}`); } 
+      const body = {
+         contents: [{ parts: [{ text: question }] }] }; 
+      const response = await fetch(URL, 
+        { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body) }); 
+      
+      if (!response.ok) { 
+        throw new Error(`Error HTTP: ${response.status}`);
+      } 
       const data = await response.json();
           
       return data.candidates[0].content.parts[0].text;

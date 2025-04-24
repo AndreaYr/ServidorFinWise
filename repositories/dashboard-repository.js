@@ -34,6 +34,18 @@ class DashboardRepository {
         Usuario.findByPk(Number(userId), { attributes: ['nombre'] }),
       ]);
 
+      const transacciones = await Transacciones.findAll({
+        where: { usuario_id: Number(userId) },
+        include: [
+          {
+            model: Categoria,
+            attributes: ['id', 'nombre', 'icono'],
+            as: 'Categoria',
+          }
+        ],
+        order: [['fecha', 'DESC']],
+      });
+
       console.log('Usuario encontrado:', usuario);
       return {
         resumenFinanzas,
@@ -41,7 +53,8 @@ class DashboardRepository {
         recordatorios,
         planificador,
         historialChat,
-        nombreUsuario: usuario?.nombre || 'Usuario'
+        nombreUsuario: usuario?.nombre || 'Usuario',
+        transacciones
       };
     } catch (error) {
       console.error('Error al obtener los datos del usuario:', error);

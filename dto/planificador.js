@@ -16,26 +16,25 @@ const Planificador = sequelize.define('Planificador', {
       model: Usuario,
       key: 'id',
     },
-    onDelete: 'CASCADE', // Asegúrate de que esta relación sea válida
-  },
-  nombre: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  tipo_gasto: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      isIn: [['fijo', 'variable']], // Asegúrate de que los valores sean válidos
-    },
+    onDelete: 'CASCADE',
   },
   descripcion: {
     type: DataTypes.TEXT,
-    allowNull: true,
+    allowNull: false,
   },
   monto_previsto: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+  },
+  gastos_reales: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0.00,
+  },
+  diferencia: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0.00,
   },
 }, {
   tableName: 'planificador',

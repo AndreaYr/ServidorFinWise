@@ -96,13 +96,13 @@ class DashboardService {
 
   //------------------------Historial de chat-----------------------------------
 
-  async askAI(question) {
+  async askAI(userId, question) {
     try{
       const answer = await this.dashboardRepository.askAI(question);
       console.log('Valor de question antes de guardar:', question);
       console.log('Valor de answer antes de guardar:', answer);
   
-    await this.dashboardRepository.saveChat(question, answer); // Guardar la pregunta y respuesta en el historial
+    await this.dashboardRepository.saveChat(userId, question, answer); // Guardar la pregunta y respuesta en el historial
     return answer
     }catch (error) {
       console.error('Error en askAI:', error);

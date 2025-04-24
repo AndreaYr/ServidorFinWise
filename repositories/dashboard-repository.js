@@ -469,6 +469,8 @@ class DashboardRepository {
 
   async askAI(question) {
     
+    console.log('Valor de question dentro de repository askAI:', question);
+
     // Realizamos una solicitud HTTP POST a la API de Gemini
     const API_KEY = process.env.GEMINI_API_KEY;
     const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
@@ -477,6 +479,10 @@ class DashboardRepository {
 
       const body = {
          contents: [{ parts: [{ text: question }] }] }; 
+
+         console.log('URL de la API de Gemini:', URL);
+        console.log('Cuerpo de la solicitud a la API de Gemini:', JSON.stringify(body));
+
       const response = await fetch(URL, 
         { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body) }); 
@@ -493,8 +499,9 @@ class DashboardRepository {
     }
   }
 
-  async saveChat(question, answer) {
+  async saveChat(userId, question, answer) {
     return await ChatBot.create({
+      usuario_id: userId,
       pregunta: question,
       respuesta: answer
     });

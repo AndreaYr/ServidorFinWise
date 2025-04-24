@@ -209,12 +209,13 @@ async getData(req, res) {
   async askAI(req, res) {
     try {
       const { question } = req.body;
+      const userId = req.user.id; // Asumiendo que el userId está disponible en req.user
 
       if (!question || question.trim() === '') {
         return res.status(400).json({ error: 'La pregunta es requerida.' });
       }
 
-      const response = await this.dashboardService.askAI(question);  // Llamada al servicio
+      const response = await this.dashboardService.askAI(userId, question);  // Llamada al servicio
       return res.status(200).json({ response });
     } catch (error) {
       return res.status(500).json({ message: 'Error al procesar la pregunta', error: error.message });

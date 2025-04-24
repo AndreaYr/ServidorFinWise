@@ -85,7 +85,7 @@ async getData(req, res) {
   // metodo para eliminar una meta de ahorro
 
   async deleteGoal(req, res) {
-    const { meta_id } = req.body; // Cambiado de 'goalId' a 'meta_id'
+    const { id: meta_id } = req.body; // Asegurarse de extraer correctamente el ID
     if (!meta_id) {
       console.log('El ID de la meta de ahorro no fue proporcionado.'); // Registro de depuración
       return res.status(400).json({ message: 'El ID de la meta de ahorro es requerido para eliminarla.' });

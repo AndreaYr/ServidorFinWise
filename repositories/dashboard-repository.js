@@ -2,12 +2,11 @@ import Transacciones from '../dto/transacciones.js';
 import MetaAhorro from '../dto/metas_ahorro.js';
 import ChatBot from '../dto/chatBot.js';
 import Planner from '../dto/planificador.js';
-import Planificador from '../dto/recordatorios.js';
-import Usuario from '../dto/usuario.js';
 import Reminder from '../dto/recordatorios.js';
-import logSystem from '../dto/logs_sistema.js';
+import Usuario from '../dto/usuario.js';
 import Categoria from '../dto/categoria.js';
-import Goal from '../dto/metas_ahorro.js'; // Add this import for the Goal model
+import Goal from '../dto/metas_ahorro.js'; // Agregar para metas de ahorro
+import axios from 'axios'; // Asegúrate de tener axios instalado
 
 class DashboardRepository {
   // Obtener datos del usuario
@@ -15,54 +14,177 @@ class DashboardRepository {
     try {
       console.log('Buscando datos del usuario en la capa repositorio:', userId);
 
+      if (isNaN(Number(userId))) {
+        throw new Error('ID de usuario inválido');
+      }
+
       const [
-        resumenFinanzas,
+        resumenFinanzas, 
         metas,
         recordatorios,
         planificador,
-        historialChat,
+        historialChat, 
         usuario
       ] = await Promise.all([
-        this.getResumenFinanciero(userId),
-        MetaAhorro.findAll({ where: { usuario_id: userId } }),
-        Reminder.findAll({ where: { usuario_id: userId } }),
-        Planificador.findAll({ where: { usuario_id: userId } }),
-        this.getChatHistory(userId),
-        Usuario.findByPk(Number (userId), { attributes: ['nombre'] }),  // Aquí debe ir la llamada a la base de datos
-       
+        this.getResumenFinanciero(Number(userId)),
+        MetaAhorro.findAll({ where: { usuario_id: Number(userId) } }),
+        Reminder.findAll({ where: { usuario_id: Number(userId) } }),
+        Planner.findAll({ where: { usuario_id: Number(userId) } }),
+        Promise.resolve([]), 
+        Usuario.findByPk(Number(userId), { attributes: ['nombre'] }),
       ]);
-      
-      console.log('Usuario encontrado:', usuario)
+
+      const transacciones = await Transacciones.findAll({
+        where: { usuario_id: Number(userId) },
+        include: [
+          {
+            model: Categoria,
+            attributes: ['id', 'nombre', 'icono'],
+            as: 'Categoria',
+          }
+        ],
+        order: [['fecha', 'DESC']],
+      });
+
+      console.log('Usuario encontrado:', usuario);
       return {
         resumenFinanzas,
         metas,
         recordatorios,
         planificador,
         historialChat,
-        nombreUsuario: usuario?.nombre || 'Usuario'
-        
+        nombreUsuario: usuario?.nombre || 'Usuario',
+        transacciones
       };
     } catch (error) {
       console.error('Error al obtener los datos del usuario:', error);
-      throw new Error('Error interno del servidor');
+      throw new Error('Error interno del servidor al obtener datos del dashboard.');
     }
   }
 
-  // Simulación de resumen financiero — puedes modificar esta lógica
-  async getResumenFinanciero(userId) {
-    const transacciones = await Transacciones.findAll({ where: { usuario_id: userId } });
+  // Función para obtener el resumen financiero
+  async getResumenFinanciero(userIdNum) {
+    try {
+      const transacciones = await Transacciones.findAll({
+        where: { usuario_id: userIdNum },
+        include: [{
+          model: Categoria, // Incluye el modelo Categoria
+          attributes: ['id', 'nombre', 'icono'], // Atributos que deseas obtener
+          as: 'Categoria', // Alias definido en el modelo Transacciones
+          required: false
+        }],
+        order: [['fecha', 'ASC']]
+      });
+      //console.log('Transacciones obtenidas:', transacciones);
+      const monthlyTotals = {};
+      const categoryIncomeTotals = {};
+      const categoryExpenseTotals = {};
+      let totalIngresosGeneral = 0;
+      let totalEgresosGeneral = 0;
 
-    const ingresos = transacciones.filter(t => t.tipo === 'ingreso').reduce((sum, t) => sum + t.monto, 0);
-    const egresos = transacciones.filter(t => t.tipo === 'egreso').reduce((sum, t) => sum + t.monto, 0);
+      const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-    return {
-      transacciones: transacciones,
-      totalIngresos: ingresos,
-      totalEgresos: egresos,
-      balance: ingresos - egresos
-    };
+      for (const t of transacciones) {
+        const fecha = new Date(t.fecha);
+        if (isNaN(fecha.getTime())) {
+          console.warn(`Fecha inválida encontrada para transacción ID ${t.id}: ${t.fecha}`);
+          continue;
+        }
+
+        const year = fecha.getFullYear();
+        const month = fecha.getMonth();
+        const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
+        const monthName = monthNames[month];
+        const montoNumerico = parseFloat(t.monto);
+
+        if (isNaN(montoNumerico)) {
+          console.warn(`Monto inválido encontrado para transacción ID ${t.id}: ${t.monto}. Saltando.`);
+          continue;
+        }
+
+        if (!monthlyTotals[monthKey]) {
+          monthlyTotals[monthKey] = { mesNombre: monthName, ingreso: 0, gasto: 0 };
+        }
+
+        //console.log('Transacción:', t.descripcion, '→ Categoría:', t.Categoria);
+
+        const categoriaNombre = t.Categoria?.nombre || 'Sin Categoría';
+        const categoriaIcono = t.Categoria?.icono || '❓';
+
+        if (t.tipo === 'ingreso') {
+          monthlyTotals[monthKey].ingreso += montoNumerico;
+          totalIngresosGeneral += montoNumerico;
+
+          if (!categoryIncomeTotals[categoriaNombre]) {
+            categoryIncomeTotals[categoriaNombre] = { total: 0, 
+              icono: categoriaIcono,
+              categoria: t.Categoria }; // Agregamos la categoría explícitamente
+          }
+          categoryIncomeTotals[categoriaNombre].total += montoNumerico;
+
+        } else if (t.tipo === 'gasto') {
+          monthlyTotals[monthKey].gasto += montoNumerico;
+          totalEgresosGeneral += montoNumerico;
+
+          if (!categoryExpenseTotals[categoriaNombre]) {
+            categoryExpenseTotals[categoriaNombre] = { total: 0, icono: categoriaIcono, categoria: t.Categoria }; // Agregamos la categoría explícitamente
+          }
+          categoryExpenseTotals[categoriaNombre].total += montoNumerico;
+        }
+      }
+
+      const sortedMonthKeys = Object.keys(monthlyTotals).sort();
+
+      const ingresosMensuales = sortedMonthKeys.map(key => ({
+        mes: monthlyTotals[key].mesNombre,
+        total: monthlyTotals[key].ingreso
+      }));
+
+      const gastosMensuales = sortedMonthKeys.map(key => ({
+        mes: monthlyTotals[key].mesNombre,
+        total: monthlyTotals[key].gasto,
+      }));
+
+      const resumenIngresos = Object.entries(categoryIncomeTotals).map(([nombre, data]) => ({
+        id: nombre,
+        label: `${data.icono} ${nombre}`,
+        value: data.total,
+        categoria: data.categoria, // Agregamos la categoría explícitamente
+      }));
+
+      const resumenGastos = Object.entries(categoryExpenseTotals).map(([nombre, data]) => ({
+        id: nombre,
+        label: `${data.icono} ${nombre}`,
+        value: data.total,
+        categoria: data.categoria // Ya estaba agregado
+      }));
+
+      return {
+        ingresosMensuales,
+        gastosMensuales,
+        resumenIngresos,
+        resumenGastos,
+        totalIngresos: totalIngresosGeneral,
+        totalEgresos: totalEgresosGeneral,
+        balance: totalIngresosGeneral - totalEgresosGeneral,
+      };
+
+    } catch (error) {
+      console.error('Error al calcular el resumen financiero:', error);
+      return {
+        ingresosMensuales: [],
+        gastosMensuales: [],
+        resumenIngresos: [],
+        resumenGastos: [],
+        totalIngresos: 0,
+        totalEgresos: 0,
+        balance: 0
+      };
+    }
   }
 
+  // Función para obtener historial de chat (si existe)
   async getChatHistory(userId) {
     return await ChatBot.findAll({
       where: { usuario_id: userId },
@@ -70,7 +192,26 @@ class DashboardRepository {
     });
   }
   
+//-----------------------------------Transacciones--------------------------------
+  // Guardar una transacción (crear o modificar)
+  async saveTransaction(userId, transactionData, transactionId = null) {
+    const data = {
+      usuario_id: userId,
+      ...transactionData
+    };
+    console.log('Datos a guardar en la transacción:', data);
 
+    if (transactionId) {
+      await Transacciones.update(data, {
+        where: {
+          id: transactionId,
+          usuario_id: userId
+        }
+      });
+    } else {
+      await Transacciones.create(data);
+    }
+  }
   // Añadir una transacción
   async addTransaction(userId, transactionData) {
     await this.saveTransaction(userId, transactionData);
@@ -330,6 +471,34 @@ class DashboardRepository {
   }
   
   //-------------------------------Historial de chat--------------------------------
+
+  async askAI(question) {
+    
+    // Realizamos una solicitud HTTP POST a la API de Gemini
+    const API_KEY = process.env.GEMINI_API_KEY;
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+  try{
+
+      const body = {
+         contents: [{ parts: [{ text: question }] }] }; 
+      const response = await fetch(URL, 
+        { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body) }); 
+      
+      if (!response.ok) { 
+        throw new Error(`Error HTTP: ${response.status}`);
+      } 
+      const data = await response.json();
+          
+      return data.candidates[0].content.parts[0].text;
+  }catch (error) {
+      console.error('Error al comunicarse con la API de Gemini:', error);
+      throw new Error('Error al obtener respuesta de la IA.');
+    }
+  }
+
+
   // Obtener el historial de conversaciones del usuario con la IA
   async getChatHistory(userId) {
     const chatHistory = await ChatBot.findAll({

@@ -12,6 +12,7 @@ import validatorModifyExpensePlanner from '../middleware/modifyExpensePlanner-va
 import validatorAddCategory from '../middleware/addCategory-validator.js';
 import validatorDeleteCategory from '../middleware/deleteCategory-validator.js';
 import validatorModifyCategory from '../middleware/modifyCategory-validator.js';
+//import validationIA from '../middleware/ia-validator.js';
 
 const router = express.Router();
 const dashboardController = new DashboardController();
@@ -37,9 +38,9 @@ router.delete('/deleteGoal', validatorDeleteGoal.validatorParams, validatorDelet
 router.put('/modifyGoal', validatorModifyGoal.validatorParams, validatorModifyGoal.validator, (req, res) => dashboardController.modifyGoal(req, res));
 
 //Ruta para manejar el planificador
-router.post('/addExpensePlanner', validatorAddExpensePlanner.validatorParams, validatorAddExpensePlanner.validator, (req, res) => dashboardController.addExpensePlanner(req, res));
-router.delete('/deleteExpensePlanner', validatorDeleteExpensePlanner.validatorParams, validatorDeleteExpensePlanner.validator, (req, res) => dashboardController.deleteExpensePlanner(req, res)); 
-router.put('/modifyExpensePlanner', validatorModifyExpensePlanner.validatorParams, validatorModifyExpensePlanner.validator, (req, res) => dashboardController.modifyExpensePlanner(req, res));
+router.post('/addExpensePlanner', (req, res) => dashboardController.addExpensePlanner(req, res));
+router.delete('/deleteExpensePlanner', (req, res) => dashboardController.deleteExpensePlanner(req, res)); 
+router.put('/modifyExpensePlanner', (req, res) => dashboardController.modifyExpensePlanner(req, res));
 
 // Rutas para manejar categorías
 router.post('/addCategory', validatorAddCategory.validatorParams, validatorAddCategory.validator, (req, res) => dashboardController.addCategory(req, res));
@@ -48,19 +49,8 @@ router.delete('/deleteCategory', validatorDeleteCategory.validatorParams, valida
 router.get('/getCategory', (req, res) => dashboardController.getCategorias(req, res));
 
 // Ruta para manejar preguntas del usuario mediante el modelo de IA
-router.post('/askAI', async (req, res) => {
-  const { question } = req.body;
-  if (!question) {
-    return res.status(400).json({ message: 'La pregunta es requerida' });
-  }
-
-  try {
-    const response = await dashboardController.askAI(req, res);
-    res.json({ answer: response });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al procesar la pregunta', error: error.message });
-  }
-});
+router.post('/askAI', (req, res) => dashboardController.askAI(req, res));
+ 
 
 // Ruta para obtener el historial de conversaciones del usuario con la IA
 router.get('/chatHistory', (req, res) => dashboardController.getChatHistory(req, res));

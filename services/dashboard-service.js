@@ -9,6 +9,7 @@ class DashboardService {
   async getData(userId) {
     console.log('Buscando datos del usuario:', userId);
     const data = await this.dashboardRepository.fetchData(userId);
+    console.log('--- Resultado Procesado getResumenFinanciero ---:', JSON.stringify(data, null, 2)); // ¡Añade esto!
     return data;
   }
 
@@ -94,6 +95,11 @@ class DashboardService {
   }
 
   //------------------------Historial de chat-----------------------------------
+
+  async askAI(question) {
+    return await this.dashboardRepository.askAI(question);
+  }
+
   // Obtener el historial de conversaciones del usuario con la IA
   async getChatHistory(userId) {
     const chatHistory = await this.dashboardRepository.getChatHistory(userId);

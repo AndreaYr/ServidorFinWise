@@ -53,6 +53,6 @@ const Transacciones = sequelize.define('Transacciones', {
 
 // Definición de relaciones
 Transacciones.belongsTo(Usuario, { foreignKey: 'usuario_id' });
-Transacciones.belongsTo(Categoria, { foreignKey: 'categoria_id' });
+Transacciones.belongsTo(Categoria, { foreignKey: 'categoria_id', as: 'Categoria' }); // Define el alias 'Categoria'
 
 export default Transacciones;

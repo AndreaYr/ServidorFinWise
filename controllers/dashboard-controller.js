@@ -37,7 +37,10 @@ async getData(req, res) {
    
     const nombreUsuario = data.nombreUsuario; // Asumiendo que el nombre de usuario está en los datos
     console.log('Nombre de usuario:', nombreUsuario); // Agregar log para verificar el nombre de usuario
-    res.json({ message: 'Datos del dashboard obtenidos exitosamente', data });
+    res.json({ 
+      message: 'Datos del dashboard obtenidos exitosamente', 
+      data 
+    });
 
   } catch (error) {
     console.error('Error al obtener los datos del dashboard:', error);
@@ -204,27 +207,19 @@ async getData(req, res) {
 
   // Método para hacer una pregunta a la IA mediante el chatbot
   async askAI(req, res) {
+    try {
+      const { question } = req.body;
 
-    const API_KEY = process.env.GEMINI_API_KEY;
-    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-    const { question } = req.body;
+      if (!question || question.trim() === '') {
+        return res.status(400).json({ error: 'La pregunta es requerida.' });
+      }
 
-    const body = {
-      contents: [{ parts: [{ text: question }] }]
-    };
-
-    const response = await fetch(URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
+      const response = await this.dashboardService.askAI(question);  // Llamada al servicio
+      return res.status(200).json({ respuesta: response });
+    } catch (error) {
+      return res.status(500).json({ message: 'Error al procesar la pregunta', error: error.message });
     }
 
-    const data = await response.json();
-    return data.candidates[0].content.parts[0].text;
   }
 
   // Método para obtener el historial de conversaciones del usuario con la IA

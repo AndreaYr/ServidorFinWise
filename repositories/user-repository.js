@@ -95,16 +95,18 @@ class UserRepository {
       if (!contraseniaValida) {
         throw new Error("Contraseña incorrecta");
       }
+
+      //Generar token
+      const token = jwt.sign(
+        {userId: info.id, userEmail: info.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+      return { login: true, token }
+
     }catch(error){
       throw new Error(error.message);
     }
-
-    const token = jwt.sign(
-      {userId: info.id, userEmail: info.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-    return { login: true, token }
   }
 
 }

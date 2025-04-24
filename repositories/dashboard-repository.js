@@ -240,23 +240,24 @@ class DashboardRepository {
   // Guardar una meta de ahorro (crear o modificar)
   async saveGoal(userId, goalData, goalId = null) {
     const data = {
-        usuario_id: userId,
-        ...goalData
+      usuario_id: userId,
+      nombre: goalData.titulo, // Asegúrate de mapear correctamente el campo
+      ...goalData,
     };
     console.log('Datos a guardar en la meta de ahorro:', data);
 
     if (goalId) {
-        // Permitir solo la modificación del monto_actual
-        await Goal.update({ monto_actual: data.monto_actual }, {
-            where: {
-                meta_id: goalId,
-                usuario_id: userId
-            }
-        });
+      // Permitir solo la modificación del monto_actual
+      await Goal.update({ monto_actual: data.monto_actual }, {
+        where: {
+          meta_id: goalId,
+          usuario_id: userId
+        }
+      });
     } else {
-        // Crear una nueva meta sin monto_actual
-        const { monto_actual, ...newGoalData } = data;
-        await Goal.create(newGoalData);
+      // Crear una nueva meta sin monto_actual
+      const { monto_actual, ...newGoalData } = data;
+      await Goal.create(newGoalData);
     }
   }
 
@@ -268,7 +269,7 @@ class DashboardRepository {
   // Eliminar una meta de ahorro
   async deleteGoal(userId, goalId) {
     if (!goalId) {
-      console.log('repo', goalId); // Registro de depuración
+      console.log('ID de meta no proporcionado en el repositorio:', goalId); // Registro de depuración
       throw new Error('El ID de la meta de ahorro es requerido para eliminarla.');
     }
     console.log('Intentando eliminar meta de ahorro con ID:', goalId, 'para usuario:', userId); // Registro de depuración

@@ -97,7 +97,15 @@ class DashboardService {
   //------------------------Historial de chat-----------------------------------
 
   async askAI(question) {
-    return await this.dashboardRepository.askAI(question);
+    try{
+      const answer = await this.dashboardRepository.askAI(question);
+    await this.dashboardRepository.saveChat(question, answer); // Guardar la pregunta y respuesta en el historial
+    return answer
+    }catch (error) {
+      console.error('Error en askAI:', error);
+      throw new Error('Error al obtener la respuesta de la IA: ' + error.message);
+    }
+    
   }
 
   // Obtener el historial de conversaciones del usuario con la IA

@@ -11,7 +11,7 @@ const ChatBot = sequelize.define('ChatBot', {
   },
   usuario_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: Usuario,
       key: 'id',
@@ -21,10 +21,6 @@ const ChatBot = sequelize.define('ChatBot', {
   descripcion: {
     type: DataTypes.TEXT,
     allowNull: true,
-  },
-  estado: {
-    type: DataTypes.STRING,
-    allowNull: false,
   },
 }, {
   tableName: 'chat_bot',

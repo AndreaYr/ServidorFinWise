@@ -184,14 +184,6 @@ class DashboardRepository {
     }
   }
 
-  // Función para obtener historial de chat (si existe)
-  async getChatHistory(userId) {
-    return await ChatBot.findAll({
-      where: { usuario_id: userId },
-      order: [['id', 'ASC']],
-    });
-  }
-  
 //-----------------------------------Transacciones--------------------------------
   // Guardar una transacción (crear o modificar)
   async saveTransaction(userId, transactionData, transactionId = null) {
@@ -502,7 +494,13 @@ class DashboardRepository {
     }
   }
 
-
+  async saveChat(question, answer) {
+    return await ChatBot.create({
+      pregunta: question,
+      respuesta: answer
+    });
+  }
+  
   // Obtener el historial de conversaciones del usuario con la IA
   async getChatHistory(userId) {
     const chatHistory = await ChatBot.findAll({

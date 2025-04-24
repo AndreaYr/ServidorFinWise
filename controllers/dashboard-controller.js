@@ -223,7 +223,7 @@ async getData(req, res) {
   }
 
   // Método para obtener el historial de conversaciones del usuario con la IA
-  async getChatHistory(req, res) {
+  async getChatHistory(req) {
     try {
       const userId = req.user.id; // Asumiendo que el userId está disponible en req.user
       const chatHistory = await this.dashboardService.getChatHistory(userId);

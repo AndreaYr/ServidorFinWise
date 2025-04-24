@@ -215,7 +215,7 @@ async getData(req, res) {
       }
 
       const response = await this.dashboardService.askAI(question);  // Llamada al servicio
-      return res.status(200).json({ respuesta: response });
+      return res.status(200).json({ response });
     } catch (error) {
       return res.status(500).json({ message: 'Error al procesar la pregunta', error: error.message });
     }

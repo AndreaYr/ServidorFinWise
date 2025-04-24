@@ -240,20 +240,23 @@ class DashboardRepository {
   // Guardar una meta de ahorro (crear o modificar)
   async saveGoal(userId, goalData, goalId = null) {
     const data = {
-      usuario_id: userId,
-      ...goalData
+        usuario_id: userId,
+        ...goalData
     };
     console.log('Datos a guardar en la meta de ahorro:', data);
 
     if (goalId) {
-      await Goal.update(data, {
-        where: {
-          meta_id: goalId, // Asegurarse de que el nombre de la columna es correcto
-          usuario_id: userId
-        }
-      });
+        // Permitir solo la modificación del monto_actual
+        await Goal.update({ monto_actual: data.monto_actual }, {
+            where: {
+                meta_id: goalId,
+                usuario_id: userId
+            }
+        });
     } else {
-      await Goal.create(data);
+        // Crear una nueva meta sin monto_actual
+        const { monto_actual, ...newGoalData } = data;
+        await Goal.create(newGoalData);
     }
   }
 

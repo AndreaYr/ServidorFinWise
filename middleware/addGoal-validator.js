@@ -5,32 +5,12 @@ const validatorParams  = [
     check('usuario_id')
         .isInt({min: 1})
         .notEmpty(),
-    check('nombre')
-        .isString()
-        .notEmpty()
-        .isLength({min: 3, max: 200})
-        .custom(async (value, { req }) => {
-            const meta = await Goal.findOne({ where: { nombre: req.body.nombre } }); // Excluye el planificador actual
-            if (meta) {
-                throw new Error('El nombre ya está en uso');
-            }
-            return true;
-        }),
     check('monto_objetivo')
         .isDecimal()
         .notEmpty()
         .custom((value) => {
             if(parseFloat(value) <= 0){
                 throw new Error('El monto objetivo debe ser mayor a 0');
-            }
-            return true;
-        }),
-    check('monto_actual')
-        .isDecimal()
-        .notEmpty()
-        .custom((value) => {
-            if(parseFloat(value) < 0){
-                throw new Error('El monto actual debe ser mayor o igual a 0');
             }
             return true;
         }),

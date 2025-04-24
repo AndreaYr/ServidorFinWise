@@ -32,9 +32,8 @@ router.delete('/deleteTransactions', validatorDeleteTransactions.validatorParams
 router.put('/modifyTransactions', validatorModifyTransactions.validatorParams, validatorModifyTransactions.validator, (req, res) => dashboardController.modifyTransaction(req, res));
 
 // Rutas para manejar metas de ahorro
-
 router.post('/addGoal', validatorAddGoal.validatorParams, validatorAddGoal.validator, (req, res) => dashboardController.addGoal(req, res));
-router.delete('/deleteGoal', validatorDeleteGoal.validatorParams, validatorDeleteGoal.validator, (req, res) => {  dashboardController.deleteGoal(req, res);});
+router.delete('/deleteGoal', validatorDeleteGoal.validatorParams, validatorDeleteGoal.validator, (req, res) => dashboardController.deleteGoal(req, res));
 router.put('/modifyGoal', validatorModifyGoal.validatorParams, validatorModifyGoal.validator, (req, res) => dashboardController.modifyGoal(req, res));
 
 //Ruta para manejar el planificador

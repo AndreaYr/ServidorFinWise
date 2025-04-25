@@ -7,6 +7,7 @@ import Usuario from '../dto/usuario.js';
 import Categoria from '../dto/categoria.js';
 import Goal from '../dto/metas_ahorro.js'; // Agregar para metas de ahorro
 import axios from 'axios'; // Asegúrate de tener axios instalado
+import Notificaciones from '../dto/notificaciones.js';
 
 class DashboardRepository {
   // Obtener datos del usuario
@@ -294,29 +295,47 @@ class DashboardRepository {
 
   //-------------------------------Recordatorios--------------------------------
   // Guardar un recordatorio (crear o modificar)
-  async saveReminder(userId, reminderData, reminderId = null) {
-    const data = {
-      usuario_id: userId,
-      ...reminderData
-    };
-    console.log('Datos a guardar en el recordatorio:', data);
+    async addReminder(userId, reminderData) {
+      const data = {
+        usuario_id: userId,
+        nombre: reminderData.nombre.trim(),
+        estado: reminderData.estado || 'pendiente',
+        fecha_inicio: reminderData.fecha_inicio,
+        fecha_vencimiento: reminderData.fecha_vencimiento,
+      };
 
-    if (reminderId) {
+      const recordatorio = await Reminder.create(data);
+      return recordatorio;
+    }
+
+    // Modificar y luego buscar para devolver el recordatorio actualizado
+    async modifyReminder(userId, reminderId, reminderData) {
+      const data = {
+        usuario_id: userId,
+        nombre: reminderData.nombre.trim(),
+        estado: reminderData.estado || 'pendiente',
+        fecha_inicio: reminderData.fecha_inicio,
+        fecha_vencimiento: reminderData.fecha_vencimiento,
+      };
+
+      // Actualizar el recordatorio en la base de datos
       await Reminder.update(data, {
         where: {
           id: reminderId,
-          usuario_id: userId
-        }
+          usuario_id: userId,
+        },
       });
-    } else {
-      await Reminder.create(data);
-    }
-  }   
 
-  // Añadir un recordatorio
-  async addReminder(userId, reminderData) {
-    await this.saveReminder(userId, reminderData);
-  }
+      // Retornar el recordatorio actualizado
+      const recordatorioActualizado = await Reminder.findOne({
+        where: {
+          id: reminderId,
+          usuario_id: userId,
+        },
+      });
+
+      return recordatorioActualizado;
+    }
 
   // Eliminar un recordatorio
   async deleteReminder(userId, reminderId) {
@@ -330,11 +349,6 @@ class DashboardRepository {
         usuario_id: userId
       }
     });
-  }
-
-  // Modificar un recordatorio
-  async modifyReminder(userId, reminderId, reminderData) {
-    await this.saveReminder(userId, reminderData, reminderId);
   }
 
   //-------------------------------Planificador--------------------------------
@@ -508,6 +522,29 @@ class DashboardRepository {
       order: [['id', 'ASC']], // Ordenar por ID para mostrar en orden cronológico
     });
     return chatHistory;
+  }
+
+  //-------------------------------Notificaciones--------------------------------
+
+  async getNotificaciones(userId) {
+    return await Notificaciones.findAll({
+      where: { usuario_id: userId },
+      order: [['fecha', 'DESC']],
+    });
+  }
+
+  async marcarNotificacionesLeidas(userId) {
+    await Notificaciones.update(
+      { leida: true },
+      { where: { usuario_id: userId, leida: false } }
+    );
+  }
+
+  async crearNotificacion(userId, mensaje) {
+    return await Notificaciones.create({
+      usuario_id: userId,
+      mensaje,
+    });
   }
 }
 

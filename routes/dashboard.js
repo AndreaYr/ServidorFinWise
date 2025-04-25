@@ -50,11 +50,21 @@ router.put('/modifyCategory', (req, res) => dashboardController.modifyCategory(r
 router.delete('/deleteCategory', (req, res) => dashboardController.deleteCategory(req, res));
 router.get('/getCategory', (req, res) => dashboardController.getCategorias(req, res));
 
+// Ruta para manejar recordatorios
+router.post('/addReminder', (req, res) => dashboardController.addReminder(req, res));
+router.delete('/deleteReminder', (req, res) => dashboardController.deleteReminder(req, res));
+router.put('/modifyReminder', (req, res) => dashboardController.modifyReminder(req, res));
+
 // Ruta para manejar preguntas del usuario mediante el modelo de IA
 router.post('/askAI', (req, res) => dashboardController.askAI(req, res));
  
 
 // Ruta para obtener el historial de conversaciones del usuario con la IA
 router.get('/chatHistory', (req, res) => dashboardController.getChatHistory(req, res));
+
+// Rutas para manejar las notificaciones
+router.get('/notificaciones', (req, res) => dashboardController.getNotificaciones(req, res));
+router.post('/notificaciones/marcar-leidas', (req, res) => dashboardController.marcarNotificacionesLeidas(req, res));
+router.post('/notificaciones', (req, res) => dashboardController.crearNotificacion(req, res));
 
 export default router;

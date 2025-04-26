@@ -105,6 +105,7 @@ async getData(req, res) {
       return res.status(400).json({ message: 'El ID de la meta de ahorro es requerido para eliminarla.' });
     }
     try {
+      console.log('ID recibido en el controlador para eliminar meta:', meta_id); // Registro de depuración
       console.log('Llamando al servicio con meta_id:', meta_id, 'userId:', req.user.id); // Registro de depuración
       const userId = req.user.id;
 

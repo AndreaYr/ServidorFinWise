@@ -1,4 +1,5 @@
 import { body, validationResult } from 'express-validator';
+import { check } from 'express-validator';
 
 const validatorParams = [
     check('descripcion')

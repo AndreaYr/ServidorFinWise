@@ -265,27 +265,18 @@ class DashboardRepository {
       console.log('ID de meta no proporcionado en el repositorio:', goalId); // Registro de depuración
       throw new Error('El ID de la meta de ahorro es requerido para eliminarla.');
     }
-    console.log('Intentando eliminar meta de ahorro con ID:', goalId, 'para usuario:', userId); // Registro de depuración
-
-    try {
-      const result = await Goal.destroy({
-        where: {
-          meta_id: goalId, // Asegúrate de que coincide con el esquema de la base de datos
-          usuario_id: userId
-        }
-      });
-      console.log('Resultado de la eliminación en el repositorio:', result); // Registro de depuración
-      if (result === 0) {
-        throw new Error('No se encontró la meta de ahorro para eliminar.');
+    console.log('Intentando eliminar meta con meta_id:', goalId, 'y usuario_id:', userId); // Registro de depuración
+    const result = await Goal.destroy({
+      where: {
+        meta_id: goalId, // Asegúrate de que coincide con el esquema de la base de datos
+        usuario_id: userId
       }
-      return result;
-    } catch (error) {
-      console.error('Error al intentar eliminar la meta de ahorro:', error); // Registro de depuración
-      if (error.name === 'SequelizeForeignKeyConstraintError') {
-        throw new Error('No se puede eliminar la meta debido a restricciones de clave foránea.');
-      }
-      throw new Error('Error al eliminar la meta de ahorro. Verifique las restricciones de la base de datos.');
+    });
+    console.log('Resultado de la eliminación:', result); // Registro de depuración
+    if (result === 0) {
+      throw new Error('No se encontró la meta de ahorro para eliminar.');
     }
+    return result;
   }
 
   // Modificar una meta de ahorro

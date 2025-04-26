@@ -12,18 +12,14 @@ import validatorModifyExpensePlanner from '../middleware/modifyExpensePlanner-va
 import validatorAddCategory from '../middleware/addCategory-validator.js';
 import validatorDeleteCategory from '../middleware/deleteCategory-validator.js';
 import validatorModifyCategory from '../middleware/modifyCategory-validator.js';
+import verifyToken from '../middleware/verifyToken.js';
 //import validationIA from '../middleware/ia-validator.js';
 
 const router = express.Router();
 const dashboardController = new DashboardController();
 
 /* Asegurarse de que el usuario está autenticado antes de acceder a la ruta /data */
-router.get('/data', (req, res, next) => {
-  if (!req.user) {
-    return res.status(401).json({ message: 'Usuario no autenticado' });
-  }
-  next();
-}, (req, res) => dashboardController.getData(req, res));
+router.get('/', verifyToken, (req, res) => dashboardController.getData(req, res));
 
 
 // Rutas para manejar transacciones

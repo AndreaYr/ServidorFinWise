@@ -1,5 +1,8 @@
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 class UserService {
 
@@ -33,7 +36,25 @@ class UserService {
         throw new Error("Email y contraseña son obligatorios.")
       }
 
-      return await this.userRepository.login(info);
+      const usuario = await this.userRepository.findByEmail(info.email);
+      if(!usuario){
+        throw new Error("Usuario no encontrado.")
+      }
+
+      //Validamos la contraseña
+      const isPasswordValid = await bcrypt.compare(info.contrasenia, usuario.contrasenia);
+      if (!isPasswordValid) {
+        throw new Error("Contraseña incorrecta.");
+      }
+
+      // Generar token JWT
+      const token = jwt.sign(
+        { id: usuario.id, email: usuario.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+
+      return { token, usuario };
     }catch (error){
       throw new Error(error.message);
     }

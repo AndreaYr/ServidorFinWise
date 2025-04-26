@@ -2,9 +2,9 @@ import { check, validationResult } from "express-validator";
 
 const validatorParams = [
     //lo quite para que no sea obligatorio el id del usuario. poder registrar teniendo en cuenta que hay un usuario ya autenticado
-    //check('usuario_id')
-       // .notEmpty().withMessage('El id del usuario es obligatorio')
-     //   .isInt({min: 1}),
+    check('usuario_id')
+       .notEmpty().withMessage('El id del usuario es obligatorio')
+        .isInt({min: 1}),
     check('categoria_id')
         .notEmpty()
         .isInt({min: 1}),

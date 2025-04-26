@@ -4,21 +4,26 @@ dotenv.config();
 
 
 const verifyToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
+  const token = req.headers.authorization?.split(' ')[1];
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Token no proporcionado o inválido' });
+  if (!token) {
+    return res.status(401).json({ error: 'Token requerido' });
   }
-
-  const token = authHeader.split(' ')[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.dataToken = decoded;
+    req.usuario = decoded; // Almacena la información del usuario decodificada en el objeto de solicitud
+    console.log('Token verificado:', req.usuario); // Log para depuración
+
+    // Verificación adicional para comprobar la estructura del token decodificado
+    if (!req.usuario || !req.usuario.id) {
+      return res.status(401).json({ error: 'Token no contiene información de usuario válida' });
+    }
+
     next();
   } catch (error) {
-    console.error('Error al verificar el token:', error.message);
-    res.status(403).json({ message: 'Token inválido o expirado' });
+    console.error("Error al verificar token:", error);
+    return res.status(401).json({ error: 'Token inválido' });
   }
 };
 

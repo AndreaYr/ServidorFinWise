@@ -42,14 +42,6 @@ class UserRepository {
   async register(info) {
 
     try{
-      try {
-        if (!info.email || !info.contrasenia) {
-          throw new Error("Email y contraseña son obligatorios.");
-        }
-      } catch (error) {
-        throw new Error("Email y contraseña son obligatorios.");
-      }
-
       //Verificar si el usuario existe
       const usuarioExiste = await Usuario.findOne({ where: { email: info.email}});
       if(usuarioExiste){
@@ -75,40 +67,7 @@ class UserRepository {
     }
   }
 
-  //Método para loguear un usuario
-  async login(info) {
-
-    try{
-      //Validamos los datos de entrada
-      if(!info.email || !info.contrasenia){
-        throw new Error("Email y contraseña son obligatorios");
-      }
-
-      //Buscar usuario
-      const usuario = await Usuario.findOne({ where: { email: info.email } });
-      if (!usuario) {
-        throw new Error("Usuario no encontrado");
-      }
-
-      //Verificar si la contraseña es correcta
-      const contraseniaValida = await bcrypt.compare(info.contrasenia, usuario.contrasenia);
-      if (!contraseniaValida) {
-        throw new Error("Contraseña incorrecta");
-      }
-
-      //Generar token
-      const token = jwt.sign(
-        {userId: info.id, userEmail: info.email },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-      );
-      return { login: true, token }
-
-    }catch(error){
-      throw new Error(error.message);
-    }
-  }
-
+  
 }
 
 export default UserRepository;

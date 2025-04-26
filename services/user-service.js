@@ -72,23 +72,31 @@ class UserService {
 
     await this.userRepository.saveResetToken(user.id, token, expiration);
 
-    const resetLink = `http://localhost:3000/reset-password/${token}`;
+    const resetLink = `http://localhost:5173/restablecer-contraseña?token=${token}`;
     await this.mailer.send(
         user.email,
         'Recuperación de contraseña',
-        `Haz clic en el siguiente enlace para restablecer tu contraseña: <a href=" ${resetLink} ">${resetLink}</a>`
+        `Haz clic en el siguiente enlace para restablecer tu contraseña: <a href=" ${resetLink} ">${resetLink}</a><br/>
+        <p>Si no solicitaste esto, ignora este correo.</p>`
     );
     return 'Se ha enviado un enlace de recuperación a tu email.';
   }
 
-  async resetPassword(token, newPassword) {
-    const user = await this.userRepository.findByToken(token);
-    if (!user || new Date(user.reset_token_expiration) < new Date()) {
+  async resetPassword(token, contrasenia) {
+    // Buscar al usuario por el reset_token
+    const user = await this.userRepository.findByToken(token)
+
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    if (new Date(user.reset_token_expiration) < new Date()) {
         throw new Error('Token inválido o expirado.');
     }
   
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(contrasenia, 10);
     await this.userRepository.updatePassword(user.id, hashedPassword);
+    await this.userRepository.clearResetToken(user.id);
   }
 
 }

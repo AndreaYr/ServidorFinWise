@@ -9,7 +9,6 @@ const validatorParams = [
         .matches(/[A-Z]/).withMessage('Debe contener al menos una letra mayúscula'),
     check('token')
         .notEmpty()
-        .isLength({min: 32})
 ];
 
 function validator(req, res, next) {

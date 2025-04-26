@@ -41,12 +41,12 @@ class UserController {
 
     resetPassword = async (req, res) => {
         try {
-            const { token, newPassword } = req.body;
-            if (!token || !newPassword) {
+            const { token, contrasenia } = req.body;
+            if (!token || !contrasenia) {
               throw new Error('Faltan datos');
             }
         
-            await this.userService.resetPassword(token, newPassword);
+            await this.userService.resetPassword(token, contrasenia);
             return res.status(200).json({ message: 'Contraseña restablecida con éxito' });
           } catch (error) {
             return res.status(400).json({ error: error.message });

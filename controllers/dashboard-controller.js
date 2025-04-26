@@ -33,10 +33,10 @@ class DashboardController {
   // Obtener datos del dashboard
   // Método para obtener los datos del dashboard
 async getData(req, res) {
-  console.log('req.usuario:', req.usuario); // Verifica que req.usuario contiene la información
+  console.log('req.usuario:', req.user); // Verifica que req.usuario contiene la información
 
   try {
-    const userId = req.usuario.id; // Asumiendo que el userId está disponible en req.user
+    const userId = req.user.id; // Asumiendo que el userId está disponible en req.user
     console.log('ID del usuario desde el req:', userId); // Agregar log para verificar el userId
 
     // Llamamos al servicio para obtener todos los datos del usuario

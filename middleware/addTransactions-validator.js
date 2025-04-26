@@ -1,44 +1,39 @@
 import { check, validationResult } from "express-validator";
 
 const validatorParams = [
-    //lo quite para que no sea obligatorio el id del usuario. poder registrar teniendo en cuenta que hay un usuario ya autenticado
     check('usuario_id')
-       .notEmpty().withMessage('El id del usuario es obligatorio')
-        .isInt({min: 1}),
+        .notEmpty().withMessage('El ID del usuario es obligatorio.')
+        .isInt({ min: 1 }).withMessage('El ID del usuario debe ser un número entero mayor a 0.'),
     check('categoria_id')
-        .notEmpty()
-        .isInt({min: 1}),
+        .notEmpty().withMessage('El ID de la categoría es obligatorio.')
+        .isInt({ min: 1 }).withMessage('El ID de la categoría debe ser un número entero mayor a 0.'),
     check('tipo')
-        .notEmpty()
-        .isIn(['ingreso', 'gasto']).withMessage('El tipo de transacción debe ser "ingreso" o "gasto"'),
+        .notEmpty().withMessage('El tipo de transacción es obligatorio.')
+        .isIn(['ingreso', 'gasto']).withMessage('El tipo de transacción debe ser "ingreso" o "gasto".'),
     check('monto')
-        .notEmpty()
-        .isDecimal()
+        .notEmpty().withMessage('El monto es obligatorio.')
+        .isDecimal().withMessage('El monto debe ser un número decimal.')
         .custom(value => {
-            if(parseFloat(value) <= 0){
-                throw new Error('El monto debe ser mayor a 0');
+            if (parseFloat(value) <= 0) {
+                throw new Error('El monto debe ser mayor a 0.');
             }
             return true;
         }),
-
     check('descripcion')
         .optional()
-        .isString()
-        .isLength({min: 3, max: 200}),
-
+        .isString().withMessage('La descripción debe ser un texto.')
+        .isLength({ min: 3, max: 200 }).withMessage('La descripción debe tener entre 3 y 200 caracteres.'),
     check('fecha')
-        .notEmpty()
-        .isISO8601()
+        .notEmpty().withMessage('La fecha es obligatoria.')
+        .isISO8601().withMessage('La fecha debe tener un formato válido.')
 ];
 
-
-//Middleware para manejar errores de validación
 function validator(req, res, next) {
     const errors = validationResult(req);
-    if(!errors.isEmpty()){
-      return res.status(400).json({errors: errors.array()});
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
     next();
 }
 
-export default {validatorParams, validator};
+export default { validatorParams, validator };

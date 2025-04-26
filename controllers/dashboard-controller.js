@@ -11,10 +11,22 @@ class DashboardController {
     try {
       const userId = req.user.id; // Asumiendo que el userId está disponible en req.user
       const data = await serviceMethod(userId, req.body);
-      res.json({ message: successMessage, data });
+
+      // Ajustar la respuesta para incluir los datos necesarios para el frontend
+      res.json({
+        message: successMessage,
+        success: true, // Indica que la operación fue exitosa
+        data, // Devuelve los datos procesados por el servicio
+      });
     } catch (error) {
-      console.error(`Error en ${successMessage.toLowerCase()}:`, error); // Agregar log para verificar el error
-      res.status(500).json({ message: `${successMessage.toLowerCase()}` });
+      console.error(`Error en ${successMessage.toLowerCase()}:`, error);
+
+      // Ajustar la respuesta de error para que el frontend pueda manejarla correctamente
+      res.status(500).json({
+        message: `Error en ${successMessage.toLowerCase()}`,
+        success: false, // Indica que la operación falló
+        error: error.message, // Devuelve el mensaje de error
+      });
     }
   }
 
@@ -198,8 +210,6 @@ async getData(req, res) {
      
       const dataCategorias = categories.map(cat => cat.dataValues);
 
-      // Log para verificar cómo quedan las categorías
-      console.log('Categorías sin dataValues:', dataCategorias);
       res.json({ message: 'Categorías recuperadas exitosamente controllers', data: dataCategorias });
     } catch (error) {
       console.error('Error al recuperar las categorías:', error);
@@ -207,6 +217,51 @@ async getData(req, res) {
     }
   }
 
+    //--------------------------------RECORDATORIOS-----------------------------------//
+    // Método para añadir un recordatorio
+    async addReminder(req, res) {
+      const reminderData = req.body;
+
+      if (!reminderData.nombre || !reminderData.nombre.trim()) {
+        return res.status(400).json({ message: 'El nombre del recordatorio no puede estar vacío.' });
+      }
+
+      try {
+        const data = await this.dashboardService.addReminder(req.user.id, reminderData);
+        res.status(200).json({ message: 'Recordatorio añadido exitosamente', recordatorio: data });
+      } catch (error) {
+        console.error('Error al añadir el recordatorio:', error);
+        res.status(500).json({ message: 'Error al añadir el recordatorio' });
+      }
+    }
+    
+    // Método para eliminar un recordatorio
+    async deleteReminder(req, res) {
+      const { id } = req.body;
+      if (!id) {
+        return res.status(400).json({ message: 'El ID del recordatorio es requerido para eliminarlo.' });
+      }
+      await this.handleRequest(req, res, (userId) => this.dashboardService.deleteReminder(userId, id), 'Recordatorio eliminado exitosamente');
+    }
+
+    // Método para modificar un recordatorio
+    async modifyReminder(req, res) {
+      const { id, ...reminderData } = req.body;
+
+      if (!id) {
+        return res.status(400).json({ message: 'El ID del recordatorio es requerido para modificarlo.' });
+      }
+
+      try {
+        const data = await this.dashboardService.modifyReminder(req.user.id, id, reminderData);
+        res.status(200).json({ message: 'Recordatorio modificado exitosamente', recordatorio: data });
+      } catch (error) {
+        console.error('Error al modificar el recordatorio:', error);
+        res.status(500).json({ message: 'Error al modificar el recordatorio' });
+      }
+    }
+
+  
   // Método para hacer una pregunta a la IA mediante el chatbot
   async askAI(req, res) {
     try {
@@ -234,6 +289,46 @@ async getData(req, res) {
     } catch (error) {
       console.error('Error al recuperar el historial de chat:', error);
       res.status(500).json({ message: 'Error al recuperar el historial de chat' });
+    }
+  }
+
+  //--------------------------------NOTIFICACIONES-----------------------------------//
+  async getNotificaciones(req, res) {
+    try {
+      const userId = req.user.id;
+      const notificaciones = await this.dashboardService.getNotificaciones(userId);
+      res.json({ message: 'Notificaciones obtenidas exitosamente', notificaciones });
+    } catch (error) {
+      console.error('Error al obtener notificaciones:', error);
+      res.status(500).json({ message: 'Error al obtener notificaciones' });
+    }
+  }
+
+  async marcarNotificacionesLeidas(req, res) {
+    try {
+      const userId = req.user.id;
+      await this.dashboardService.marcarNotificacionesLeidas(userId);
+      res.json({ message: 'Notificaciones marcadas como leídas' });
+    } catch (error) {
+      console.error('Error al marcar notificaciones como leídas:', error);
+      res.status(500).json({ message: 'Error al marcar notificaciones como leídas' });
+    }
+  }
+
+  async crearNotificacion(req, res) {
+    try {
+      const userId = req.user.id;
+      const { mensaje } = req.body;
+
+      if (!mensaje || mensaje.trim() === '') {
+        return res.status(400).json({ message: 'El mensaje de la notificación no puede estar vacío.' });
+      }
+
+      const notificacion = await this.dashboardService.crearNotificacion(userId, mensaje);
+      res.status(200).json({ message: 'Notificación creada exitosamente', notificacion });
+    } catch (error) {
+      console.error('Error al crear notificación:', error);
+      res.status(500).json({ message: 'Error al crear notificación' });
     }
   }
 }

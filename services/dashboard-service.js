@@ -94,6 +94,21 @@ class DashboardService {
     return categories;
   }
 
+  //------------------------Recordatorios-----------------------------------
+  
+  async addReminder(userId, reminderData) {
+    return await this.dashboardRepository.addReminder(userId, reminderData); // ← Retorna el recordatorio creado
+  }
+  
+  async modifyReminder(userId, reminderId, reminderData) {
+    return await this.dashboardRepository.modifyReminder(userId, reminderId, reminderData); // ← Retorna el modificado
+  }
+
+  // Eliminar un recordatorio
+  async deleteReminder(userId, reminderId) {
+    await this.dashboardRepository.deleteReminder(userId, reminderId);
+  }
+
   //------------------------Historial de chat-----------------------------------
 
   async askAI(userId, question) {
@@ -115,6 +130,20 @@ class DashboardService {
   async getChatHistory(userId) {
     const chatHistory = await this.dashboardRepository.getChatHistory(userId);
     return chatHistory;
+  }
+
+  //------------------------Notificaciones-----------------------------------
+
+  async getNotificaciones(userId) {
+    return await this.dashboardRepository.getNotificaciones(userId);
+  }
+
+  async marcarNotificacionesLeidas(userId) {
+    await this.dashboardRepository.marcarNotificacionesLeidas(userId);
+  }
+
+  async crearNotificacion(userId, mensaje) {
+    return await this.dashboardRepository.crearNotificacion(userId, mensaje);
   }
 }
 

@@ -1,13 +1,11 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import  Usuario  from './dto/usuario.js'; // Asegúrate de que la ruta sea correcta
 import user from './routes/user.js';
 import dashboard from './routes/dashboard.js';
 import { connectSequelize } from './database/sequelize.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import verifyToken from './middleware/verifyToken.js';
 
 dotenv.config();
 

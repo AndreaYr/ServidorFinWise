@@ -26,7 +26,7 @@ router.delete('/deleteTransactions', verifyToken, validatorDeleteTransactions.va
 router.put('/modifyTransactions', verifyToken, validatorModifyTransactions.validatorParams, validatorModifyTransactions.validator, (req, res) => dashboardController.modifyTransaction(req, res));
 
 // Rutas para manejar metas de ahorro
-router.post('/addGoal', verifyToken, validatorAddGoal.validatorParams, validatorAddGoal.validator, (req, res) => dashboardController.addGoal(req, res));
+router.post('/addGoal', verifyToken,(req, res) => dashboardController.addGoal(req, res));
 router.delete('/deleteGoal', verifyToken, validatorDeleteGoal.validatorParams, validatorDeleteGoal.validator, (req, res) => dashboardController.deleteGoal(req, res));
 router.put('/modifyGoal', verifyToken, validatorModifyGoal.validatorParams, validatorModifyGoal.validator, (req, res) => dashboardController.modifyGoal(req, res));
 

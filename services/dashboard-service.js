@@ -5,141 +5,88 @@ class DashboardService {
     this.dashboardRepository = new DashboardRepository();
   }
 
-  // Obtener datos del usuario
   async getData(userId) {
-    console.log('Buscando datos del usuario:', userId);
-    const data = await this.dashboardRepository.fetchData(userId);
-    console.log('--- Resultado Procesado getResumenFinanciero ---:', JSON.stringify(data, null, 2)); // ¡Añade esto!
-    return data;
+    return await this.dashboardRepository.fetchData(userId);
   }
 
-  // Añadir una transacción
   async addTransaction(userId, transactionData) {
-    const data = await this.dashboardRepository.addTransaction(userId, transactionData);
-    return data;
+    return await this.dashboardRepository.addTransaction(userId, transactionData);
   }
 
-  // Eliminar una transacción
   async deleteTransaction(userId, transactionId) {
-    await this.dashboardRepository.deleteTransaction(userId, transactionId);
+    return await this.dashboardRepository.deleteTransaction(userId, transactionId);
   }
 
-  // Modificar una transacción
   async modifyTransaction(userId, transactionId, transactionData) {
-    const data = await this.dashboardRepository.modifyTransaction(userId, transactionId, transactionData);
-    return data;
+    return await this.dashboardRepository.modifyTransaction(userId, transactionId, transactionData);
   }
 
-  //------------------------Metas de ahorro-----------------------------------
-
-  // Añadir una meta de ahorro
   async addGoal(userId, goalData) {
-    const data = await this.dashboardRepository.addGoal(userId, goalData);
-    return data;
+    return await this.dashboardRepository.addGoal(userId, goalData);
   }
 
-  // Eliminar una meta de ahorro
-  async deleteGoal(userId, meta_id) { // Cambiado de 'goalId' a 'meta_id'
-    console.log('Servicio: Eliminando meta con meta_id:', meta_id, 'userId:', userId); // Registro de depuración
-    const result = await this.dashboardRepository.deleteGoal(userId, meta_id);
-    console.log('Servicio: Resultado de la eliminación:', result); // Registro de depuración
-    return result;
+  async deleteGoal(userId, goalId) {
+    return await this.dashboardRepository.deleteGoal(userId, goalId);
   }
 
-  // Modificar una meta de ahorro
   async modifyGoal(userId, goalId, goalData) {
-    const data = await this.dashboardRepository.modifyGoal(userId, goalId, goalData);
-    return data;
+    return await this.dashboardRepository.modifyGoal(userId, goalId, goalData);
   }
 
-  //------------------------Planificador-----------------------------------
-  // Añadir un planificador de gastos
   async addExpensePlanner(userId, plannerData) {
-    const data = await this.dashboardRepository.addExpensePlanner(userId, plannerData);
-    return data;
+    return await this.dashboardRepository.addExpensePlanner(userId, plannerData);
   }
 
-  // Eliminar un planificador
   async deleteExpensePlanner(userId, plannerId) {
-    await this.dashboardRepository.deleteExpensePlanner(userId, plannerId);
+    return await this.dashboardRepository.deleteExpensePlanner(userId, plannerId);
   }
 
-  // Modificar un planificador
   async modifyExpensePlanner(userId, plannerId, plannerData) {
-    const data = await this.dashboardRepository.modifyExpensePlanner(userId, plannerId, plannerData);
-    return data;
+    return await this.dashboardRepository.modifyExpensePlanner(userId, plannerId, plannerData);
   }
 
-  //------------------------Categorías-----------------------------------
-  // Añadir una categoría
   async addCategory(userId, categoryData) {
-    const data = await this.dashboardRepository.addCategory(userId, categoryData);
-    return data;
+    return await this.dashboardRepository.addCategory(userId, categoryData);
   }
 
-  // Modificar una categoría
-  async modifyCategory(id, categoryData) {
-    const data = await this.dashboardRepository.modifyCategory(id, categoryData);
-    return data;
+  async deleteCategory(categoryId) {
+    return await this.dashboardRepository.deleteCategory(categoryId);
   }
 
-  // Eliminar una categoría
-  async deleteCategory( id) {
-    await this.dashboardRepository.deleteCategory(id);
+  async modifyCategory(categoryData) {
+    return await this.dashboardRepository.modifyCategory(categoryData);
   }
 
-  // Obtener categorías
   async getCategorias(tipo) {
-    const categories = await this.dashboardRepository.getCategorias(tipo);
-    return categories;
+    return await this.dashboardRepository.getCategorias(tipo);
   }
 
-  //------------------------Recordatorios-----------------------------------
-  
   async addReminder(userId, reminderData) {
-    return await this.dashboardRepository.addReminder(userId, reminderData); // ← Retorna el recordatorio creado
-  }
-  
-  async modifyReminder(userId, reminderId, reminderData) {
-    return await this.dashboardRepository.modifyReminder(userId, reminderId, reminderData); // ← Retorna el modificado
+    return await this.dashboardRepository.addReminder(userId, reminderData);
   }
 
-  // Eliminar un recordatorio
   async deleteReminder(userId, reminderId) {
-    await this.dashboardRepository.deleteReminder(userId, reminderId);
+    return await this.dashboardRepository.deleteReminder(userId, reminderId);
   }
 
-  //------------------------Historial de chat-----------------------------------
+  async modifyReminder(userId, reminderId, reminderData) {
+    return await this.dashboardRepository.modifyReminder(userId, reminderId, reminderData);
+  }
 
   async askAI(userId, question) {
-    try{
-      const answer = await this.dashboardRepository.askAI(question);
-      console.log('Valor de question antes de guardar:', question);
-      console.log('Valor de answer antes de guardar:', answer);
-  
-    await this.dashboardRepository.saveChat(userId, question, answer); // Guardar la pregunta y respuesta en el historial
-    return answer
-    }catch (error) {
-      console.error('Error en askAI:', error);
-      throw new Error('Error al obtener la respuesta de la IA: ' + error.message);
-    }
-    
+    return await this.dashboardRepository.askAI(userId, question);
   }
 
-  // Obtener el historial de conversaciones del usuario con la IA
   async getChatHistory(userId) {
-    const chatHistory = await this.dashboardRepository.getChatHistory(userId);
-    return chatHistory;
+    return await this.dashboardRepository.getChatHistory(userId);
   }
-
-  //------------------------Notificaciones-----------------------------------
 
   async getNotificaciones(userId) {
     return await this.dashboardRepository.getNotificaciones(userId);
   }
 
   async marcarNotificacionesLeidas(userId) {
-    await this.dashboardRepository.marcarNotificacionesLeidas(userId);
+    return await this.dashboardRepository.marcarNotificacionesLeidas(userId);
   }
 
   async crearNotificacion(userId, mensaje) {

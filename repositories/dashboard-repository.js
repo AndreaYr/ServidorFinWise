@@ -139,25 +139,25 @@ class DashboardRepository {
 
       const ingresosMensuales = sortedMonthKeys.map(key => ({
         mes: monthlyTotals[key].mesNombre,
-        total: monthlyTotals[key].ingreso
+        total: parseFloat(monthlyTotals[key].ingreso.toFixed(2)).toString()
       }));
 
       const gastosMensuales = sortedMonthKeys.map(key => ({
         mes: monthlyTotals[key].mesNombre,
-        total: monthlyTotals[key].gasto,
+        total: parseFloat(monthlyTotals[key].gasto.toFixed(2)).toString(),
       }));
 
       const resumenIngresos = Object.entries(categoryIncomeTotals).map(([nombre, data]) => ({
         id: nombre,
         label: `${data.icono} ${nombre}`,
-        value: data.total,
+        value: parseFloat(data.total.toFixed(2)).toString(),
         categoria: data.categoria, // Agregamos la categoría explícitamente
       }));
 
       const resumenGastos = Object.entries(categoryExpenseTotals).map(([nombre, data]) => ({
         id: nombre,
         label: `${data.icono} ${nombre}`,
-        value: data.total,
+        value: parseFloat(data.total.toFixed(2)).toString(),
         categoria: data.categoria // Ya estaba agregado
       }));
 
@@ -482,33 +482,53 @@ class DashboardRepository {
   
   //-------------------------------Historial de chat--------------------------------
 
-  async askAI(question) {
-    
+  async askAI(userId, question) {
     console.log('Valor de question dentro de repository askAI:', question);
+
+    // Obtener toda la información del usuario
+    const userData = await this.fetchData(userId);
+
+    // Construir el contexto para la IA
+    const context = `
+      Información del usuario:
+      - Nombre: ${userData.nombreUsuario}
+      - Balance: ${userData.resumenFinanzas.balance}
+      - Metas: ${userData.metas.map(meta => `${meta.nombre} (${meta.monto_actual}/${meta.monto_objetivo})`).join(', ') || 'No tienes metas creadas'}
+      - Recordatorios: ${userData.recordatorios.map(r => `${r.nombre} (Inicio: ${r.fecha_inicio}, Vencimiento: ${r.fecha_vencimiento})`).join(', ') || 'No tienes recordatorios'}
+      - Transacciones recientes: ${userData.transacciones.slice(0, 5).map(t => `${t.descripcion} (${t.tipo}: ${t.monto})`).join(', ') || 'No tienes transacciones recientes'}
+    `;
 
     // Realizamos una solicitud HTTP POST a la API de Gemini
     const API_KEY = process.env.GEMINI_API_KEY;
     const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-  try{
-
+    try {
       const body = {
-         contents: [{ parts: [{ text: question }] }] }; 
+        contents: [
+          {
+            parts: [
+              { text: `Contexto:\n${context}\n\nPregunta: ${question}` }
+            ]
+          }
+        ]
+      };
 
-         console.log('URL de la API de Gemini:', URL);
-        console.log('Cuerpo de la solicitud a la API de Gemini:', JSON.stringify(body));
+      console.log('URL de la API de Gemini:', URL);
+      console.log('Cuerpo de la solicitud a la API de Gemini:', JSON.stringify(body));
 
-      const response = await fetch(URL, 
-        { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body) }); 
-      
-      if (!response.ok) { 
+      const response = await fetch(URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
         throw new Error(`Error HTTP: ${response.status}`);
-      } 
+      }
+
       const data = await response.json();
-          
       return data.candidates[0].content.parts[0].text;
-  }catch (error) {
+    } catch (error) {
       console.error('Error al comunicarse con la API de Gemini:', error);
       throw new Error('Error al obtener respuesta de la IA.');
     }

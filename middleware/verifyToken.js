@@ -12,11 +12,11 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuario = decoded; // Almacena la información del usuario decodificada en el objeto de solicitud
-    console.log('Token verificado:', req.usuario); // Log para depuración
+    req.user = decoded; // Almacena la información del usuario decodificada en el objeto de solicitud
+    console.log('Token verificado:', req.user); // Log para depuración
 
     // Verificación adicional para comprobar la estructura del token decodificado
-    if (!req.usuario || !req.usuario.id) {
+    if (!req.user || !req.user.id) {
       return res.status(401).json({ error: 'Token no contiene información de usuario válida' });
     }
 

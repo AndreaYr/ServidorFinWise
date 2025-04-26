@@ -1,7 +1,6 @@
 import { check, validationResult } from "express-validator";
 
 const validatorParams = [
-   
     check('descripcion')
         .optional()
         .isString().withMessage('La descripción debe ser un texto.')

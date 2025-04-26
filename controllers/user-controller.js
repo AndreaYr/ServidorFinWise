@@ -57,7 +57,9 @@ class UserController {
 
         try{
             return res.status(200).json({ 
-                data: `Tu email leído en tu token es: ${req.dataToken.userEmail}`
+                data: `Tu email leído en tu token es: ${req.usuario.userEmail}`,
+                id: req.usuario.id,
+                email: req.usuario.email
             });
         }catch(error){
             return res.status(400).json({ error: error.message });

@@ -3,9 +3,6 @@ import { check, validationResult } from "express-validator";
 import { Op } from "sequelize"; // Importa Op desde Sequelize
 
 const validatorParams = [
-    check('id')
-        .notEmpty().withMessage('El ID del planificador es requerido para modificarlo.')
-        .isInt({ min: 1 }),
     check('nombre')
         .optional()
         .isString()

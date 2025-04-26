@@ -272,12 +272,12 @@ async getData(req, res) {
         return res.status(400).json({ error: 'La pregunta es requerida.' });
       }
 
-      const response = await this.dashboardService.askAI(userId, question);  // Llamada al servicio
+      const response = await this.dashboardService.askAI(userId, question);
       return res.status(200).json({ response });
     } catch (error) {
+      console.error('Error al procesar la pregunta:', error);
       return res.status(500).json({ message: 'Error al procesar la pregunta', error: error.message });
     }
-
   }
 
   // Método para obtener el historial de conversaciones del usuario con la IA

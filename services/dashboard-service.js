@@ -112,18 +112,7 @@ class DashboardService {
   //------------------------Historial de chat-----------------------------------
 
   async askAI(userId, question) {
-    try{
-      const answer = await this.dashboardRepository.askAI(question);
-      console.log('Valor de question antes de guardar:', question);
-      console.log('Valor de answer antes de guardar:', answer);
-  
-    await this.dashboardRepository.saveChat(userId, question, answer); // Guardar la pregunta y respuesta en el historial
-    return answer
-    }catch (error) {
-      console.error('Error en askAI:', error);
-      throw new Error('Error al obtener la respuesta de la IA: ' + error.message);
-    }
-    
+    return await this.dashboardRepository.askAI(userId, question);
   }
 
   // Obtener el historial de conversaciones del usuario con la IA
@@ -144,6 +133,25 @@ class DashboardService {
 
   async crearNotificacion(userId, mensaje) {
     return await this.dashboardRepository.crearNotificacion(userId, mensaje);
+  }
+
+  // Analizar finanzas del usuario y generar notificaciones
+  async analyzeAndNotify(userId) {
+    const data = await this.dashboardRepository.fetchData(userId);
+    const balance = data.resumenFinanzas.balance;
+
+    let mensaje;
+    if (balance < 0) {
+      mensaje = "Tu balance es negativo. Considera reducir gastos o aumentar tus ingresos.";
+    } else if (balance < 1000) {
+      mensaje = "Tu balance es bajo. Podrías establecer metas de ahorro para mejorar tu situación financiera.";
+    } else {
+      mensaje = "Tu balance es positivo. ¡Buen trabajo! Considera invertir o ahorrar más.";
+    }
+
+    // Crear notificación
+    await this.dashboardRepository.crearNotificacion(userId, mensaje);
+    return mensaje;
   }
 }
 

@@ -81,6 +81,14 @@ class DashboardService {
     return await this.dashboardRepository.getChatHistory(userId);
   }
 
+  async saveChat(userId, question, answer, isSensitive) {
+    return await this.dashboardRepository.saveChat(userId, question, answer, isSensitive);
+  }
+
+  async limitSensitiveChatHistory(userId, limit) {
+    return await this.dashboardRepository.limitSensitiveChatHistory(userId, limit);
+  }
+
   async getNotificaciones(userId) {
     return await this.dashboardRepository.getNotificaciones(userId);
   }

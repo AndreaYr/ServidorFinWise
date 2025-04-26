@@ -26,6 +26,11 @@ const ChatBot = sequelize.define('ChatBot', {
     type: DataTypes.TEXT,
     allowNull: true, 
   },
+  sensible: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false, // Por defecto, las conversaciones no son sensibles
+  },
 }, {
   tableName: 'chat_bot',
   timestamps: false,

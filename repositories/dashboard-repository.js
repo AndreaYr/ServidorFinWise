@@ -485,20 +485,19 @@ class DashboardRepository {
   async askAI(userId, question) {
     console.log('Valor de question dentro de repository askAI:', question);
 
-    // Obtener toda la información del usuario
+    // Construir el contexto para preguntas relacionadas con los datos del usuario
     const userData = await this.fetchData(userId);
-
-    // Construir el contexto para la IA
-    const context = `
+    const generalContext = `
       Información del usuario:
       - Nombre: ${userData.nombreUsuario}
       - Balance: ${userData.resumenFinanzas.balance}
       - Metas: ${userData.metas.map(meta => `${meta.nombre} (${meta.monto_actual}/${meta.monto_objetivo})`).join(', ') || 'No tienes metas creadas'}
+      - Recordatorios pendientes: ${userData.recordatorios.filter(r => r.estado === 'pendiente').length || 0}
       - Recordatorios: ${userData.recordatorios.map(r => `${r.nombre} (Inicio: ${r.fecha_inicio}, Vencimiento: ${r.fecha_vencimiento})`).join(', ') || 'No tienes recordatorios'}
       - Transacciones recientes: ${userData.transacciones.slice(0, 5).map(t => `${t.descripcion} (${t.tipo}: ${t.monto})`).join(', ') || 'No tienes transacciones recientes'}
     `;
 
-    // Realizamos una solicitud HTTP POST a la API de Gemini
+    const context = generalContext; // Usar siempre el contexto general
     const API_KEY = process.env.GEMINI_API_KEY;
     const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
@@ -513,9 +512,6 @@ class DashboardRepository {
         ]
       };
 
-      console.log('URL de la API de Gemini:', URL);
-      console.log('Cuerpo de la solicitud a la API de Gemini:', JSON.stringify(body));
-
       const response = await fetch(URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -523,10 +519,16 @@ class DashboardRepository {
       });
 
       if (!response.ok) {
+        console.error(`Error HTTP al comunicarse con la API de Gemini: ${response.status}`);
         throw new Error(`Error HTTP: ${response.status}`);
       }
 
       const data = await response.json();
+      if (!data.candidates || data.candidates.length === 0) {
+        console.error('Respuesta vacía o inválida de la API de Gemini:', data);
+        throw new Error('La API de IA no devolvió una respuesta válida.');
+      }
+
       return data.candidates[0].content.parts[0].text;
     } catch (error) {
       console.error('Error al comunicarse con la API de Gemini:', error);
@@ -534,12 +536,27 @@ class DashboardRepository {
     }
   }
 
-  async saveChat(userId, question, answer) {
+  async saveChat(userId, question, answer, isSensitive = false) {
     return await ChatBot.create({
       usuario_id: userId,
       pregunta: question,
-      respuesta: answer
+      respuesta: answer,
+      sensible: isSensitive, // Nuevo campo para marcar conversaciones sensibles
     });
+  }
+
+  async limitSensitiveChatHistory(userId, limit) {
+    const sensitiveChats = await ChatBot.findAll({
+      where: { usuario_id: userId, sensible: true },
+      order: [['id', 'DESC']],
+      offset: limit, // Saltar las últimas `limit` conversaciones
+    });
+
+    // Eliminar conversaciones sensibles que excedan el límite
+    const idsToDelete = sensitiveChats.map(chat => chat.id);
+    if (idsToDelete.length > 0) {
+      await ChatBot.destroy({ where: { id: idsToDelete } });
+    }
   }
   
   // Obtener el historial de conversaciones del usuario con la IA

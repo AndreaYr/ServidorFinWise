@@ -266,13 +266,24 @@ async getData(req, res) {
   async askAI(req, res) {
     try {
       const { question } = req.body;
-      const userId = req.user.id; // Asumiendo que el userId está disponible en req.user
+      const userId = req.user.id;
 
       if (!question || question.trim() === '') {
         return res.status(400).json({ error: 'La pregunta es requerida.' });
       }
 
+      // Llamar al servicio para obtener la respuesta de la IA
       const response = await this.dashboardService.askAI(userId, question);
+
+      // Guardar la conversación en el historial
+      const isSensitive = question.toLowerCase().includes('finanzas');
+      await this.dashboardService.saveChat(userId, question, response, isSensitive);
+
+      // Limitar el historial si es una conversación sensible
+      if (isSensitive) {
+        await this.dashboardService.limitSensitiveChatHistory(userId, 4);
+      }
+
       return res.status(200).json({ response });
     } catch (error) {
       console.error('Error al procesar la pregunta:', error);
@@ -281,7 +292,7 @@ async getData(req, res) {
   }
 
   // Método para obtener el historial de conversaciones del usuario con la IA
-  async getChatHistory(req) {
+  async getChatHistory(req, res) {
     try {
       const userId = req.user.id; // Asumiendo que el userId está disponible en req.user
       const chatHistory = await this.dashboardService.getChatHistory(userId);

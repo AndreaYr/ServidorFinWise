@@ -1,9 +1,6 @@
 import { check, validationResult } from "express-validator";
 
 const validatorParams = [
-    check('usuario_id')
-        .notEmpty().withMessage('El ID del usuario es obligatorio.')
-        .isInt({ min: 1 }).withMessage('El ID del usuario debe ser un número entero mayor a 0.'),
     check('categoria_id')
         .notEmpty().withMessage('El ID de la categoría es obligatorio.')
         .isInt({ min: 1 }).withMessage('El ID de la categoría debe ser un número entero mayor a 0.'),

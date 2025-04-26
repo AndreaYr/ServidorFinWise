@@ -1,15 +1,36 @@
 import { check, validationResult } from 'express-validator';
+import Meta from '../dto/metas_ahorro.js'
 
 const validatorParams = [
     check('usuario_id')
-        .notEmpty().withMessage('El ID del usuario es obligatorio.')
-        .isInt({ min: 1 }).withMessage('El ID del usuario debe ser un número entero mayor a 0.'),
+        .notEmpty()
+        .isInt({min: 1}),
+    check('nombre')
+        .notEmpty()
+        .isString()
+        .isLength({ min: 3, max: 50 })
+        .custom(async (value, { req }) => {
+            const meta = await Meta.findOne({ where: { nombre: req.body.nombre } }); // Excluye el planificador actual
+            if (meta) {
+                throw new Error('El nombre del planificador ya está en uso');
+            }
+            return true;
+        }),
     check('monto_objetivo')
         .notEmpty().withMessage('El monto objetivo es obligatorio.')
         .isDecimal().withMessage('El monto objetivo debe ser un número decimal.')
         .custom(value => {
             if (parseFloat(value) <= 0) {
                 throw new Error('El monto objetivo debe ser mayor a 0.');
+            }
+            return true;
+        }),
+    check('monto_actual')
+        .notEmpty()
+        .isDecimal()
+        .custom(value => {
+            if (parseFloat(value) < 0) {
+                throw new Error('El monto actual no debe ser menor a 0.');
             }
             return true;
         }),
